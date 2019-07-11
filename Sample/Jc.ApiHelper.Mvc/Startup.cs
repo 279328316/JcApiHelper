@@ -74,6 +74,16 @@ namespace Jc.ApiHelper.Mvc
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseErrorHandling();     //统一异常处理
+
+            //允许跨域设置
+            app.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    );
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
