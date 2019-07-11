@@ -9,13 +9,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace Jc.ApiHelper.Api
 {
     /// <summary>
-    /// 标识不对返回的结果进行封装处理
-    /// </summary>
-    public class NoPackageResultAttribute : Attribute
-    {
-    }
-
-    /// <summary>
     /// ApiResult封装
     /// </summary>
     public class ApiResultFilter : ActionFilterAttribute
