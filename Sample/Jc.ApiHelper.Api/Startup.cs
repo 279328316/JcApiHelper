@@ -63,6 +63,16 @@ namespace Jc.ApiHelper.Api
 
             app.UseMvc();
 
+            app.UseErrorHandling();     //统一异常处理
+
+            //允许跨域设置
+            app.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    );
+
             app.UseJcApiHelper();
 
             //启用中间件服务生成Swagger作为JSON终结点
