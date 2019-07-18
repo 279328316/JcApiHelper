@@ -59,7 +59,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             {
                 PermissionDto dbDto = Dbc.Db.GetById<PermissionDto>(dto.Id);
                 ExHelper.ThrowIfNull(dbDto,"查找更新记录失败.");
-                dbDto.MapTo(dto, a => a.Id);
+                dbDto.CopyTo(dto, a => a.Id);
             }
             Dbc.Db.Set(dto);
             return true;

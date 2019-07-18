@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jc.ApiHelper" Version="1.0.3" />
-    <PackageReference Include="Jc.Core" Version="1.0.44" />
+    <PackageReference Include="Jc.ApiHelper" Version="1.0.4" />
+    <PackageReference Include="Jc.Core" Version="1.0.45" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />

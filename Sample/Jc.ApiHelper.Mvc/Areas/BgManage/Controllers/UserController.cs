@@ -60,7 +60,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             {
                 UserDto dbDto = Dbc.Db.GetById<UserDto>(dto.Id);
                 ExHelper.ThrowIfNull(dbDto,"查找更新记录失败.");
-                dbDto.MapTo(dto, a => a.Id);
+                dbDto.CopyTo(dto, a => a.Id);
             }
             else
             {
