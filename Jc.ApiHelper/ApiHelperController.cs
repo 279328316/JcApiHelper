@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jc.ApiHelper;
+using Jc.ApiHelper.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -54,7 +55,17 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetControllerList()
         {
-            return new JsonResult(JcApiHelper.GetControllerList());
+            Robj<List<ControllerModel>> robj = new Robj<List<ControllerModel>>();
+            try
+            {
+                List<ControllerModel> controllerList = JcApiHelper.GetControllerList();
+                robj.Result = controllerList;
+            }
+            catch (Exception ex)
+            {
+                robj.Error(ex.Message);
+            }
+            return new JsonResult(robj);
         }
 
         /// <summary>
@@ -67,11 +78,21 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetController([FromForm]string controllerId)
         {
-            if (string.IsNullOrEmpty(controllerId))
+            Robj<ControllerModel> robj = new Robj<ControllerModel>();
+            try
             {
-                throw new Exception("参数controllerId不能为空");
+                if (string.IsNullOrEmpty(controllerId))
+                {
+                    throw new Exception("参数controllerId不能为空");
+                }
+                ControllerModel controller = JcApiHelper.GetController(controllerId);
+                robj.Result = controller;
             }
-            return new JsonResult(JcApiHelper.GetController(controllerId));
+            catch (Exception ex)
+            {
+                robj.Error(ex.Message);
+            }
+            return new JsonResult(robj);
         }
 
         /// <summary>
@@ -84,11 +105,21 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetAction([FromForm]string actionId)
         {
-            if (string.IsNullOrEmpty(actionId))
+            Robj<ActionModel> robj = new Robj<ActionModel>();
+            try
             {
-                throw new Exception("参数Id不能为空");
+                if (string.IsNullOrEmpty(actionId))
+                {
+                    throw new Exception("参数Id不能为空");
+                }
+                ActionModel action = JcApiHelper.GetAction(actionId);
+                robj.Result = action;
             }
-            return new JsonResult(JcApiHelper.GetAction(actionId));
+            catch (Exception ex)
+            {
+                robj.Error(ex.Message);
+            }
+            return new JsonResult(robj);
         }
 
         /// <summary>
@@ -101,11 +132,21 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetPType([FromForm]string typeId)
         {
-            if (string.IsNullOrEmpty(typeId))
+            Robj<PTypeModel> robj = new Robj<PTypeModel>();
+            try
             {
-                throw new Exception("参数typeId不能为空");
+                if (string.IsNullOrEmpty(typeId))
+                {
+                    throw new Exception("参数typeId不能为空");
+                }
+                PTypeModel ptype = JcApiHelper.GetPTypeModel(typeId);
+                robj.Result = ptype;
             }
-            return new JsonResult(JcApiHelper.GetPTypeModel(typeId));
+            catch (Exception ex)
+            {
+                robj.Error(ex.Message);
+            }
+            return new JsonResult(robj);
         }
 
         /// <summary>
@@ -119,17 +160,26 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetTsModel([FromForm]string itemId, [FromForm]string itemType)
         {
-            if (string.IsNullOrEmpty(itemId))
+            Robj<TsResultModel> robj = new Robj<TsResultModel>();
+            try
             {
-                throw new Exception("参数typeId不能为空");
+                if (string.IsNullOrEmpty(itemId))
+                {
+                    throw new Exception("参数typeId不能为空");
+                }
+                if (string.IsNullOrEmpty(itemType))
+                {
+                    throw new Exception("参数itemType不能为空");
+                }
+                TsCreator creator = new TsCreator();
+                TsResultModel tsResult = creator.GetTsResultModel(itemId, itemType);
+                robj.Result = tsResult;
             }
-            if (string.IsNullOrEmpty(itemType))
+            catch (Exception ex)
             {
-                throw new Exception("参数itemType不能为空");
+                robj.Error(ex.Message);
             }
-            TsCreator creator = new TsCreator();
-            TsResultModel tsResult = creator.GetTsResultModel(itemId, itemType);
-            return new JsonResult(tsResult);
+            return new JsonResult(robj);
         }
     }
 

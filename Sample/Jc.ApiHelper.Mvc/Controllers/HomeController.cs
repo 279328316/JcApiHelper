@@ -19,7 +19,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return View();
+            return Redirect("ApiHelper/index.html");
         }
 
         /// <summary>
