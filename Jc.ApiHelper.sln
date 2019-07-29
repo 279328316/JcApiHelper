@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jc.ApiHelper.Api", "Sample\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jc.ApiHelper.Mvc", "Sample\Jc.ApiHelper.Mvc\Jc.ApiHelper.Mvc.csproj", "{BDE2AA60-A9DA-43A2-867C-0201994F1715}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jc.ApiHelper", "Jc.ApiHelper\Jc.ApiHelper.csproj", "{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,17 @@ Global
 		{BDE2AA60-A9DA-43A2-867C-0201994F1715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDE2AA60-A9DA-43A2-867C-0201994F1715}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDE2AA60-A9DA-43A2-867C-0201994F1715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{18522747-B330-419A-A3F0-1430C3E138BD} = {EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}
+		{BDE2AA60-A9DA-43A2-867C-0201994F1715} = {EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {51D3A1EE-551B-4E69-8F3F-C11C41B9253F}

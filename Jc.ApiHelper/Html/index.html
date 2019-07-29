@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Api Helper</title>
+  <base id="base" href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+      /*解决nginx代理或非根目录请求*/
+      /*base修改必须在各资源请求之前*/
+      var url = window.location.pathname;
+      if(url.indexOf('index.html')>0) {
+        document.getElementById("base").href = window.location.pathname.replace("index.html", "");
+      }
+  </script>
+  <link rel="icon" href="favicon.ico"/>
+<link rel="stylesheet" href="styles.6c15b8993aecc6105c99.css"></head>
+<body>
+  <app-root></app-root>
+<script src="runtime-es2015.2ff5f6701261baf9f9a4.js" type="module"></script><script src="polyfills-es2015.27661dfa98f6332c27dc.js" type="module"></script><script src="runtime-es5.84f3034516a928c5efa1.js" nomodule></script><script src="polyfills-es5.2e5f0eafe40ded881b53.js" nomodule></script><script src="main-es2015.92d420e64156d6a9fc5d.js" type="module"></script><script src="main-es5.080b48eb48c2a8e3a809.js" nomodule></script></body>
+</html>

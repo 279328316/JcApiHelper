@@ -1,0 +1,181 @@
+/*主模块相关Css*/
+
+body {
+  font-size: 13px;
+  -webkit-text-size-adjust: none;
+  background: #FFFFFF;
+}
+
+label {
+  display: inline-block; /*设置label样式为 inline-block 可以设置宽度*/
+}
+
+button {
+  font-size: 14px;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: #2ea7e7;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #2f8bfa;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+}
+
+/*修复火狐浏览器下边框显示不全问题*/
+.ant-table table {
+  border-spacing: 0;
+  border-collapse: unset;
+}
+
+.noborder .ant-table {
+  border: none !important;
+}
+
+.small-table table > tbody > tr > td {
+  padding: 4px !important;
+}
+
+.inner {
+  width: 265px;
+  height: 400px;
+  position: absolute;
+  top: 33px;
+  left: 13px;
+  overflow: hidden;
+}
+
+.innerbox {
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: #000;
+  font-size: .7rem;
+  font-family: "\5FAE\8F6F\96C5\9ED1", Helvetica, "黑体", Arial, Tahoma;
+  height: 100%;
+}
+
+/*滚动条样式*/
+.innerbox::-webkit-scrollbar {
+  width: 4px;
+  /*height: 4px;*/
+}
+
+.innerbox::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.innerbox::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/*设置scrollbar样式*/
+/*::-webkit-scrollbar-track,
+.ant-anchor-wrapper::-webkit-scrollbar-track,
+.ant-dialog-wrap::-webkit-scrollbar-track,
+.ant-drawer-body::-webkit-scrollbar-track,
+.ant-drawer-wrapper-body::-webkit-scrollbar-track,
+.scrollbar::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+textarea.ant-input::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+}
+
+::-webkit-scrollbar-thumb,
+.ant-anchor-wrapper::-webkit-scrollbar-thumb,
+.ant-dialog-wrap::-webkit-scrollbar-thumb,
+.ant-drawer-body::-webkit-scrollbar-thumb,
+.ant-drawer-wrapper-body::-webkit-scrollbar-thumb,
+.scrollbar::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+textarea.ant-input::-webkit-scrollbar-thumb {
+  background-color: #6e6e6e;
+  outline: #333 solid 1px;
+}
+
+::-webkit-scrollbar,
+.ant-anchor-wrapper::-webkit-scrollbar,
+.ant-dialog-wrap::-webkit-scrollbar,
+.ant-drawer-body::-webkit-scrollbar,
+.ant-drawer-wrapper-body::-webkit-scrollbar,
+.scrollbar::-webkit-scrollbar,
+body::-webkit-scrollbar,
+textarea.ant-input::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+body::-webkit-scrollbar{
+  width: 5px;
+  height: 5px;
+}*/
+
+/*文件上传相关样式*/
+.file {
+  position: relative;
+  display: inline-block;
+  background: #D0EEFF;
+  /*border: 1px solid #99D3F5;*/
+  /*border-radius: 4px;*/
+  /*padding: 4px 12px;*/
+  overflow: hidden;
+  /*color: #1E88C7;*/
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 20px;
+}
+
+.file input {
+  cursor: pointer;
+  position: absolute;
+  font-size: 100px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.file:hover {
+  background: #AADFFD;
+  border-color: #78C3F3;
+  color: #004974;
+  text-decoration: none;
+}
+
+/*Content Container*/
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: 750px
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    width: 970px
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
+    min-height: 420px;
+  }
+}

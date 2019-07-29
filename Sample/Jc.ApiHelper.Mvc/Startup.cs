@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace Jc.ApiHelper.Mvc
 {
@@ -51,12 +50,6 @@ namespace Jc.ApiHelper.Mvc
                 //Test
                 options.SerializerSettings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
             });
-
-            //注册Swagger生成器，定义一个和多个Swagger 文档
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,16 +89,8 @@ namespace Jc.ApiHelper.Mvc
                 );
             });
 
+            //启用JcApiHelper
             app.UseJcApiHelper();
-
-            //启用中间件服务生成Swagger作为JSON终结点
-            app.UseSwagger();
-
-            //启用中间件服务对swagger-ui，指定Swagger JSON终结点
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
         }
     }
 }
