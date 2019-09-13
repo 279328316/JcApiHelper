@@ -47,6 +47,28 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
+        /// 获取App产品版本
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("[action]")]
+        public IActionResult GetApiVersion()
+        {
+            Robj<string> robj = new Robj<string>();
+            List<Assembly> assemblyList = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            Assembly assembly = assemblyList.FirstOrDefault(a=>a.GetName().Name==currentDomain.FriendlyName);
+            if (assembly != null)
+            {
+                //AssemblyFileVersionAttribute fileVersionAttr = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
+                AssemblyInformationalVersionAttribute versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                robj.Result = versionAttr?.InformationalVersion;
+            }
+            return new JsonResult(robj);
+        }
+
+        /// <summary>
         /// 获取所有Controller
         /// </summary>
         /// <returns></returns>
