@@ -50,7 +50,7 @@ namespace Jc.ApiHelper
             string httpMethod = httpContext.Request.Method;
             string path = httpContext.Request.Path.Value;
 
-            if (httpMethod == "GET" && Regex.IsMatch(path, $"JcApiHelper/index.html"))
+            if (httpMethod == "GET" && Regex.IsMatch(path, $"ApiHelper/index.html"))
             {   //index.html特殊处理
                 await RespondWithIndexHtml(httpContext.Response);
                 return;

@@ -100,7 +100,7 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 默认值
         /// </summary>
-        public object DefaultValue { get; set; }
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// 特性列表

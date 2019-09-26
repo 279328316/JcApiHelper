@@ -176,7 +176,7 @@ namespace Jc.ApiHelper
             {
                 Name = paramInfo.Name,
                 PType = ptype,
-                DefaultValue = paramInfo.DefaultValue,
+                DefaultValue = paramInfo.DefaultValue?.ToString(),
                 Position = paramInfo.Position + 1
             };
             return param;

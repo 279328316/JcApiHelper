@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
@@ -11,16 +11,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jc.Core" Version="1.0.45" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <Compile Remove="Areas\BgManage\Data\**" />
+    <Compile Remove="Areas\BgManage\Models\**" />
+    <Compile Remove="Areas\BgManage\Views\**" />
+    <Content Remove="Areas\BgManage\Data\**" />
+    <Content Remove="Areas\BgManage\Models\**" />
+    <Content Remove="Areas\BgManage\Views\**" />
+    <EmbeddedResource Remove="Areas\BgManage\Data\**" />
+    <EmbeddedResource Remove="Areas\BgManage\Models\**" />
+    <EmbeddedResource Remove="Areas\BgManage\Views\**" />
+    <None Remove="Areas\BgManage\Data\**" />
+    <None Remove="Areas\BgManage\Models\**" />
+    <None Remove="Areas\BgManage\Views\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\BgManage\Data\" />
-    <Folder Include="Areas\BgManage\Models\" />
-    <Folder Include="Areas\BgManage\Views\" />
+    <PackageReference Include="Jc.Core" Version="1.0.45" />
   </ItemGroup>
 
   <ItemGroup>
