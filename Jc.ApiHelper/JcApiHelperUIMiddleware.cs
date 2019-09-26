@@ -12,10 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.StaticFiles;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Jc.ApiHelper
 {
@@ -33,7 +29,7 @@ namespace Jc.ApiHelper
         /// <param name="next">A function that can process an HTTP request</param>
         /// <param name="hostingEnv">运行环境</param>
         /// <param name="loggerFactory">logger</param>
-        public JcApiHelperUIMiddleware(RequestDelegate next,IHostingEnvironment hostingEnv,ILoggerFactory loggerFactory)
+        public JcApiHelperUIMiddleware(RequestDelegate next,IWebHostEnvironment hostingEnv,ILoggerFactory loggerFactory)
         {
             StaticFileOptions staticFileOptions = new StaticFileOptions
             {
@@ -54,7 +50,7 @@ namespace Jc.ApiHelper
             string httpMethod = httpContext.Request.Method;
             string path = httpContext.Request.Path.Value;
 
-            if (httpMethod == "GET" && Regex.IsMatch(path, $"ApiHelper/index.html"))
+            if (httpMethod == "GET" && Regex.IsMatch(path, $"JcApiHelper/index.html"))
             {   //index.html特殊处理
                 await RespondWithIndexHtml(httpContext.Response);
                 return;
