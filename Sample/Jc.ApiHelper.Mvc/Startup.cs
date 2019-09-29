@@ -51,9 +51,9 @@ namespace Jc.ApiHelper.Mvc
 
             //允许跨域设置
             app.UseCors(builder => builder
+                    .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
                     );
 
             app.UseJcApiHelper();
