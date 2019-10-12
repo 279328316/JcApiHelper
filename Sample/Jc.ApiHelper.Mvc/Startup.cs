@@ -37,7 +37,7 @@ namespace Jc.ApiHelper.Mvc
                 options.JsonSerializerOptions.IgnoreNullValues = true;
                 //忽略循环引用
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            }); ;
+            });
 
         }
 
