@@ -59,6 +59,7 @@ namespace Jc.ApiHelper.Api
             }
             if (!allowAnonymous)
             {
+                string area = filterContext.RouteData.Values["area"].ToString();
                 string controller = filterContext.RouteData.Values["controller"].ToString();
                 string action = filterContext.RouteData.Values["action"].ToString();
 

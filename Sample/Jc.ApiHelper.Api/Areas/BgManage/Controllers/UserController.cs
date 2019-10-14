@@ -12,7 +12,7 @@ namespace Jc.ApiHelper.Api.Controllers
     /// 用户信息管理
     /// </summary>
     [Area("BgManage")]
-    public class UserController : ControllerBase
+    public class UserController : WebControllerBase
     {
         #region Methods
 
@@ -40,7 +40,6 @@ namespace Jc.ApiHelper.Api.Controllers
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>UserDto</returns>
-        [HttpPost]
         public UserDto GetUser(Guid id)
         {
             ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
