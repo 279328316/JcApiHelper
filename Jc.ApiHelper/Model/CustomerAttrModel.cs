@@ -11,7 +11,7 @@ namespace Jc.ApiHelper
     /// <summary>
     /// 自定义特性Model
     /// </summary>
-    internal class CustomerAttrModel
+    public class CustomerAttrModel
     {
         #region Properties
         

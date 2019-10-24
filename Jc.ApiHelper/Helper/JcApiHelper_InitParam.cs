@@ -14,7 +14,7 @@ namespace Jc.ApiHelper
     /// JcApiHelper
     /// 使用前请调用Init方法进行初始化
     /// </summary>
-    internal static partial class JcApiHelper
+    public static partial class JcApiHelper
     {
         #region 构造参数Model
 

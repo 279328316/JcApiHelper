@@ -11,7 +11,7 @@ namespace Jc.ApiHelper
     /// <summary>
     /// 参数对象
     /// </summary>
-    internal class PTypeModel
+    public class PTypeModel
     {
         #region Properties
 

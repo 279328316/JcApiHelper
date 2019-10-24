@@ -11,7 +11,7 @@ namespace Jc.ApiHelper
     /// <summary>
     /// Controller对象
     /// </summary>
-    internal class ControllerModel
+    public class ControllerModel
     {
         /// <summary>
         /// Id

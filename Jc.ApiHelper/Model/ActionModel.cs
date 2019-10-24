@@ -12,7 +12,7 @@ namespace Jc.ApiHelper
     /// <summary>
     /// Action 对象
     /// </summary>
-    internal class ActionModel
+    public class ActionModel
     {
         /// <summary>
         /// Id
