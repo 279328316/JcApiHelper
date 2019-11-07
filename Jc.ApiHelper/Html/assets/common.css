@@ -175,7 +175,7 @@ body::-webkit-scrollbar{
 
 @media (min-width: 1200px) {
   .container {
-    width: 1170px;
+    width: 90%;
     min-height: 420px;
   }
 }

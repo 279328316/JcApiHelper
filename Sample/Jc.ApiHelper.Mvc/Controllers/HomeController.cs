@@ -31,6 +31,15 @@ namespace Jc.ApiHelper.Mvc.Controllers
             return View();
         }
 
+
+        /// <summary>
+        /// Test Method
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string,string> ATest()
+        {
+            return null;
+        }
         /// <summary>
         /// Error
         /// </summary>
