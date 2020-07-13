@@ -15,14 +15,14 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Jc.Core" Version="1.1.2" />
+    <Folder Include="Areas\BgManage\Data\" />
+    <Folder Include="Areas\BgManage\Models\" />
+    <Folder Include="Areas\BgManage\Views\" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <Folder Include="Areas\BgManage\Data\" />
-    <Folder Include="Areas\BgManage\Models\" />
-    <Folder Include="Areas\BgManage\Views\" />
+    <PackageReference Include="Jc.Core" Version="1.1.2.5" />
   </ItemGroup>
 
 

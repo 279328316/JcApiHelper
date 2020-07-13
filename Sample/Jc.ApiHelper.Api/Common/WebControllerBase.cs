@@ -7,7 +7,6 @@ using System.Data;
 using System.Text.RegularExpressions;
 
 using System.Reflection;
-using Mi.BeautyMedical.Base;
 using System.Collections.Specialized;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
