@@ -22,6 +22,8 @@ namespace Jc.ApiHelper
     {
         private const string embeddedFileNamespace = "Jc.ApiHelper.Html";
         private readonly StaticFileMiddleware staticFileMiddleware;
+        private static Assembly apiHelperAssembly = null;
+        private static List<string> apiResources = null;
 
         /// <summary>
         /// Ctor
@@ -31,11 +33,15 @@ namespace Jc.ApiHelper
         /// <param name="loggerFactory">logger</param>
         public JcApiHelperUIMiddleware(RequestDelegate next,IWebHostEnvironment hostingEnv,ILoggerFactory loggerFactory)
         {
+            apiHelperAssembly = typeof(JcApiHelperUIMiddleware).GetTypeInfo().Assembly;
+            apiResources = apiHelperAssembly.GetManifestResourceNames().ToList();
+            
             StaticFileOptions staticFileOptions = new StaticFileOptions
             {
                 RequestPath = "/ApiHelper",
-                FileProvider = new EmbeddedFileProvider(typeof(JcApiHelperUIMiddleware).GetTypeInfo().Assembly, embeddedFileNamespace),
+                FileProvider = new EmbeddedFileProvider(apiHelperAssembly, embeddedFileNamespace)
             };
+
             staticFileMiddleware = new StaticFileMiddleware(next, hostingEnv,
                 Options.Create(staticFileOptions), loggerFactory);
         }
@@ -48,12 +54,22 @@ namespace Jc.ApiHelper
         public async Task Invoke(HttpContext httpContext)
         {
             string httpMethod = httpContext.Request.Method;
-            string path = httpContext.Request.Path.Value;
+            string path = httpContext.Request.Path.Value.ToLower();
 
-            if (httpMethod == "GET" && Regex.IsMatch(path, $"ApiHelper/index.html"))
+            if (httpMethod == "GET" && Regex.IsMatch(path, $"apihelper/index.html"))
             {   //index.html特殊处理
                 await RespondWithIndexHtml(httpContext.Response);
                 return;
+            }
+            else if (httpMethod == "GET" && Regex.IsMatch(path, $"/apihelper/"))
+            {
+                string resourceName = path.Replace($"/apihelper/", "")
+                                        .Replace("/",".");
+                if (!apiResources.Any(a=>a.ToLower() == $"{embeddedFileNamespace}.{resourceName}".ToLower()))
+                {   // 处理刷新界面
+                    await RespondWithIndexHtml(httpContext.Response);
+                    return;
+                }
             }
             await staticFileMiddleware.Invoke(httpContext);
         }
@@ -68,13 +84,13 @@ namespace Jc.ApiHelper
             response.StatusCode = 200;
             response.ContentType = "text/html;charset=utf-8";
 
-            using (Stream stream = typeof(JcApiHelperUIMiddleware).GetTypeInfo().Assembly.GetManifestResourceStream($"{embeddedFileNamespace}.index.html"))
+            using (Stream stream = apiHelperAssembly.GetManifestResourceStream($"{embeddedFileNamespace}.index.html"))
             {
                 // Inject arguments before writing to response
                 StringBuilder htmlBuilder = new StringBuilder(new StreamReader(stream).ReadToEnd());
 
                 //处理index.html baseUrl 以兼容非根目录以及Nginx代理转发情况
-                htmlBuilder.Replace("<base href=\"/\">", $"<base href=\"/ApiHelper/\">");
+                htmlBuilder.Replace("<base id=\"base\" href=\"/\">", $"<base id=\"base\" href=\"/ApiHelper/\">");
                 await response.WriteAsync(htmlBuilder.ToString(), Encoding.UTF8);
             }
         }
