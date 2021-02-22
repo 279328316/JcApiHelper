@@ -56,19 +56,22 @@ namespace Jc.ApiHelper
             string httpMethod = httpContext.Request.Method;
             string path = httpContext.Request.Path.Value.ToLower();
 
-            if (httpMethod == "GET" && Regex.IsMatch(path, $"apihelper/index.html"))
-            {   //index.html特殊处理
-                await RespondWithIndexHtml(httpContext.Response);
-                return;
-            }
-            else if (httpMethod == "GET" && Regex.IsMatch(path, $"/apihelper/"))
+            if (httpMethod == "GET" && Regex.IsMatch(path, $"/apihelper/"))
             {
-                string resourceName = path.Replace($"/apihelper/", "")
-                                        .Replace("/",".");
-                if (!apiResources.Any(a=>a.ToLower() == $"{embeddedFileNamespace}.{resourceName}".ToLower()))
-                {   // 处理刷新界面
+                if (Regex.IsMatch(path, $"/apihelper/index.html"))
+                {   //index.html特殊处理
                     await RespondWithIndexHtml(httpContext.Response);
                     return;
+                }
+                else
+                {
+                    string resourceName = path.Replace($"/apihelper/", "")
+                                            .Replace("/", ".");
+                    if (!apiResources.Any(a => a.ToLower() == $"{embeddedFileNamespace}.{resourceName}".ToLower()))
+                    {   // 处理刷新界面
+                        await RespondWithIndexHtml(httpContext.Response);
+                        return;
+                    }
                 }
             }
             await staticFileMiddleware.Invoke(httpContext);
