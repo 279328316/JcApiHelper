@@ -246,7 +246,7 @@ namespace Jc.ApiHelper
             headerCodeBuilder.AppendLine("import {Observable} from 'rxjs/Observable';");
             headerCodeBuilder.AppendLine();
 
-            jcCodeBuilder.AppendLine("import {Jc} from '@core/jc'");
+            jcCodeBuilder.AppendLine("import {Util} from '@core/util'");
             jcCodeBuilder.AppendLine();
             jcCodeBuilder.AppendLine("@Injectable()");
             jcCodeBuilder.AppendLine($"export class {controller.ControllerName}Service {{");
@@ -346,7 +346,7 @@ namespace Jc.ApiHelper
 
             strBuilder.AppendLine($"  /*{(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}*/");
             strBuilder.AppendLine($"  public { FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
-            strBuilder.AppendLine($"    return Jc.ajax('{actionRouteName}'{ajaxParamStr});");
+            strBuilder.AppendLine($"    return Util.ajax('{actionRouteName}'{ajaxParamStr});");
             strBuilder.AppendLine("  }");
             return strBuilder.ToString();
         }

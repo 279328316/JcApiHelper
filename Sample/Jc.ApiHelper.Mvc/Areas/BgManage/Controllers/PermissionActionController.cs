@@ -52,7 +52,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// </summary>
         /// <returns>bool</returns>
         [HttpPost]
-        private bool SetPermissionaction(PermissionactionDto dto)
+        public bool SetPermissionaction(PermissionactionDto dto)
         {
             CheckPermissionaction(dto);//检查用户输入
             if (dto.Id != Guid.Empty)

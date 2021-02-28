@@ -90,6 +90,34 @@ namespace Jc.ApiHelper
             return new JsonResult(robj);
         }
 
+
+        /// <summary>
+        /// 获取所有Controller
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("[action]")]
+        public IActionResult GetControllerListByIds([FromBody]List<string> ids)
+        {
+            Robj<List<ControllerModel>> robj = new Robj<List<ControllerModel>>();
+            try
+            {
+                // List<string> ids = idsStr.Split(',').ToList();
+                List<ControllerModel> list = new List<ControllerModel>();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    list.Add(JcApiHelper.GetController(ids[i]));
+                }
+                robj.Result = list;
+            }
+            catch (Exception ex)
+            {
+                robj.Error(ex.Message);
+            }
+            return new JsonResult(robj);
+        }
+
         /// <summary>
         /// 根据controllerId获取Controller
         /// </summary>

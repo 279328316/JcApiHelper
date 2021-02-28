@@ -16,6 +16,9 @@ namespace Jc.ApiHelper
     /// </summary>
     internal static class AssemblyHelper
     {
+        private static Dictionary<string, AssemblyNoteModel> fileAssemblyDic 
+                                    = new Dictionary<string, AssemblyNoteModel>();
+
         /// <summary>
         /// 获取AssemblyNote
         /// </summary>
@@ -23,23 +26,39 @@ namespace Jc.ApiHelper
         /// <returns></returns>
         public static AssemblyNoteModel GetAssemblyNote(string xmlFilePath)
         {
+            if (fileAssemblyDic.ContainsKey(xmlFilePath))
+            {
+                return fileAssemblyDic[xmlFilePath];
+            }
             FileInfo fileInfo = new FileInfo(xmlFilePath);
             if (!File.Exists(xmlFilePath))
             {
                 return null;
             }
-            XmlHelper xmlHelper = new XmlHelper(xmlFilePath);
-            AssemblyNoteModel assemblyNoteModel = xmlHelper.DeserializeNode<AssemblyNoteModel>("assembly");
-            assemblyNoteModel.ModuleName = fileInfo.Name.Replace(".xml", ".dll");
-
-            XmlNode memberListNode = xmlHelper.GetNode("members");
-            XmlNode memberNode = memberListNode.FirstChild;
-            while (memberNode != null)
+            AssemblyNoteModel assemblyNoteModel = null;
+            lock (fileAssemblyDic)
             {
-                MemberNoteModel memberModel = GetMember(memberNode);
-                assemblyNoteModel.MemberList.Add(memberModel);
+                if (fileAssemblyDic.ContainsKey(xmlFilePath))
+                {
+                    return fileAssemblyDic[xmlFilePath];
+                }
 
-                memberNode = memberNode.NextSibling;
+                XmlHelper xmlHelper = new XmlHelper(xmlFilePath);
+                assemblyNoteModel = xmlHelper.DeserializeNode<AssemblyNoteModel>("assembly");
+                assemblyNoteModel.ModuleName = fileInfo.Name.Replace(".xml", ".dll");
+
+                XmlNode memberListNode = xmlHelper.GetNode("members");
+                XmlNode memberNode = memberListNode.FirstChild;
+                while (memberNode != null)
+                {
+                    MemberNoteModel memberModel = GetMember(memberNode);
+                    assemblyNoteModel.MemberList.Add(memberModel);
+                    memberNode = memberNode.NextSibling;
+                }
+                if (!fileAssemblyDic.ContainsKey(xmlFilePath))
+                {
+                    fileAssemblyDic.Add(xmlFilePath, assemblyNoteModel);
+                }
             }
             return assemblyNoteModel;
         }

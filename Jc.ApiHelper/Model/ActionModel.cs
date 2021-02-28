@@ -56,7 +56,7 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 特性参数列表
         /// </summary>
-        public List<CustomerAttrModel> CustomerAttrList { get; set; }
+        public List<CustomAttrModel> CustomAttrList { get; set; }
 
         /// <summary>
         /// 参数列表

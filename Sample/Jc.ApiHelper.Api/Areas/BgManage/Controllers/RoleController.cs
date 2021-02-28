@@ -52,7 +52,7 @@ namespace Jc.ApiHelper.Api.Controllers
         /// </summary>
         /// <returns>bool</returns>
         [HttpPost]
-        private bool SetRole(RoleDto dto)
+        public bool SetRole(RoleDto dto)
         {
             CheckRole(dto);//检查用户输入
             if (dto.Id != Guid.Empty)

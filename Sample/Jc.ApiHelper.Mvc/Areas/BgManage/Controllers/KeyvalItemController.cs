@@ -52,7 +52,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// </summary>
         /// <returns>bool</returns>
         [HttpPost]
-        private bool SetKeyvalitem(KeyvalItemDto dto)
+        public bool SetKeyvalitem(KeyvalItemDto dto)
         {
             CheckKeyvalitem(dto);//检查用户输入
             if (dto.Id != Guid.Empty)

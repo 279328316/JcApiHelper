@@ -68,7 +68,7 @@ namespace Jc.ApiHelper
         {
             get
             {
-                return CustomerAttrList?.Any(attr=>attr.Name.ToLower().Contains("jsonignore"));
+                return CustomAttrList?.Any(attr=>attr.Name.ToLower().Contains("jsonignore"));
             }
         }
 
@@ -105,8 +105,7 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 特性列表
         /// </summary>
-        [JsonIgnore]
-        public List<CustomerAttrModel> CustomerAttrList { get; set; }
+        public List<CustomAttrModel> CustomAttrList { get; set; }
 
         /// <summary>
         /// 类型信息对象

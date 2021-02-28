@@ -59,39 +59,48 @@ namespace Jc.ApiHelper
         /// <param name="actionProvider"></param>
         private static void InitController(IActionDescriptorCollectionProvider actionProvider)
         {
-            #region 获取Controller,Action,TypeModel信息
-            List<ActionDescriptor> actionDescList = actionProvider.ActionDescriptors.Items.ToList();
-            for (int i = 0; i < actionDescList.Count; i++)
+            lock (controllerList)
             {
-                ControllerActionDescriptor actionDescriptor = actionDescList[i] as ControllerActionDescriptor;
-
-                ControllerModel controller = controllerList.Where(a => 
-                    a.Id == TypeHelper.GetModuleMark(actionDescriptor.ControllerTypeInfo)).FirstOrDefault();
-                if (controller == null)
+                if (controllerList.Count > 0)
                 {
-                    controller = GetControllerModel(actionDescriptor);
-                    if (controller.ControllerName == "ApiHelper")
-                    {
-                        continue;
-                    }
-                    controllerList.Add(controller);
+                    return;
                 }
-                ActionModel action = GetActionModel(actionDescriptor);
-                controller.ActionList.Add(action);
-            }
-            #endregion
+                #region 获取Controller,Action,TypeModel信息
+                List<ActionDescriptor> actionDescList = actionProvider.ActionDescriptors.Items.ToList();
+                for (int i = 0; i < actionDescList.Count; i++)
+                {
+                    ControllerActionDescriptor actionDescriptor = actionDescList[i] as ControllerActionDescriptor;
 
-            #region Controller,Action 排序
-            for (int i = 0; i < controllerList.Count; i++)
-            {
-                controllerList[i].ActionList.Sort((a1, a2) => {
-                    return a1.ActionName.CompareTo(a2.ActionName);
+                    ControllerModel controller = controllerList.Where(a =>
+                        a.Id == TypeHelper.GetModuleMark(actionDescriptor.ControllerTypeInfo)).FirstOrDefault();
+                    if (controller == null)
+                    {
+                        controller = GetControllerModel(actionDescriptor);
+                        if (controller.ControllerName == "ApiHelper")
+                        {
+                            // continue;
+                        }
+                        controllerList.Add(controller);
+                    }
+                    ActionModel action = GetActionModel(actionDescriptor);
+                    controller.ActionList.Add(action);
+                }
+                #endregion
+
+                #region Controller,Action 排序
+                for (int i = 0; i < controllerList.Count; i++)
+                {
+                    controllerList[i].ActionList.Sort((a1, a2) =>
+                    {
+                        return a1.ActionName.CompareTo(a2.ActionName);
+                    });
+                }
+                controllerList.Sort((a1, a2) =>
+                {
+                    return a1.ControllerName.CompareTo(a2.ControllerName);
                 });
+                #endregion
             }
-            controllerList.Sort((a1, a2) => {
-                return a1.ControllerName.CompareTo(a2.ControllerName);
-            });
-            #endregion
         }
 
         /// <summary>
@@ -106,7 +115,7 @@ namespace Jc.ApiHelper
             {
                 Id = TypeHelper.GetModuleMark(controllerTypeInfo),
                 FullName = controllerTypeInfo.FullName,
-                CustomerAttrList = controllerTypeInfo.CustomAttributes.Select(a => GetCustomerAttribute(a)).ToList(),
+                CustomAttrList = controllerTypeInfo.CustomAttributes.Select(a => GetCustomAttribute(a)).ToList(),
                 ModuleName = controllerTypeInfo.Module.Name,
                 AreaName = actionDescriptor.RouteValues.Keys.Contains("area") ?
                                     actionDescriptor.RouteValues["area"] : null,
@@ -131,8 +140,8 @@ namespace Jc.ApiHelper
                 ActionFullName = actionDescriptor.DisplayName,
                 RouteTemplate = actionDescriptor.AttributeRouteInfo?.Template,
 
-                CustomerAttrList = actionDescriptor.MethodInfo.CustomAttributes.Select((a, index) =>
-                                        GetCustomerAttribute(a, index)).ToList(),
+                CustomAttrList = actionDescriptor.MethodInfo.CustomAttributes.Select((a, index) =>
+                                        GetCustomAttribute(a, index)).ToList(),
                 InputParameters = actionDescriptor.Parameters.Select((a, index) =>
                                     GetParam(((ControllerParameterDescriptor)a).ParameterInfo)).ToList(),
                 ReturnParameter = GetParam(actionDescriptor.MethodInfo.ReturnParameter)
@@ -150,8 +159,14 @@ namespace Jc.ApiHelper
         /// <returns></returns>
         public static List<ControllerModel> GetControllerList()
         {
-            InitAllControllerNote();
-            return controllerList;
+            //InitAllControllerNote();
+            List<ControllerModel> list = controllerList.Select(a =>
+                            new ControllerModel() { 
+                                Id = a.Id,
+                                AreaName = a.AreaName,
+                                ControllerName = a.ControllerName
+                            }).ToList();
+            return list;
         }
 
         /// <summary>

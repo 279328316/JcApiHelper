@@ -52,7 +52,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// </summary>
         /// <returns>bool</returns>
         [HttpPost]
-        private bool SetMenu(MenuDto dto)
+        public bool SetMenu(MenuDto dto)
         {
             CheckMenu(dto);//检查用户输入
             if (dto.Id != Guid.Empty)

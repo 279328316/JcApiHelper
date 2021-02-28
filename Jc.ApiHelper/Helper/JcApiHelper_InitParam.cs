@@ -105,18 +105,38 @@ namespace Jc.ApiHelper
         /// Ctor
         /// Attribute使用
         /// 根据AttributeData
-        /// 构造CustomerAttrModel
+        /// 构造CustomAttrModel
         /// </summary>
-        private static CustomerAttrModel GetCustomerAttribute(CustomAttributeData customAttribute, int index = 0)
+        private static CustomAttrModel GetCustomAttribute(CustomAttributeData customAttribute, int index = 0)
         {
             PTypeModel ptype = GetPType(customAttribute.AttributeType);
-            CustomerAttrModel model = new CustomerAttrModel()
+            CustomAttrModel model = new CustomAttrModel()
             {
                 Name = ptype.TypeName.Replace("Attribute",""),
                 PType = ptype,
                 Position = index,
                 ConstructorArgumentsList = customAttribute.ConstructorArguments.Select((a,i)=> { return GetParam(a, i); }).ToList(),
                 NamedArgumentsList = customAttribute.NamedArguments.Select((a, i) => { return GetParam(a, i); }).ToList()
+            };
+            return model;
+        }
+
+        /// <summary>
+        /// Ctor
+        /// Attribute使用
+        /// 根据AttributeData
+        /// 构造CustomAttrModel
+        /// </summary>
+        private static CustomAttrModel GetCustomAttribute(Attribute customAttribute, int index = 0)
+        {
+            PTypeModel ptype = GetPType(customAttribute.GetType());
+            CustomAttrModel model = new CustomAttrModel()
+            {
+                Name = ptype.TypeName.Replace("Attribute", ""),
+                PType = ptype,
+                Position = index,
+                //ConstructorArgumentsList = customAttribute.ConstructorArguments.Select((a, i) => { return GetParam(a, i); }).ToList(),
+                //NamedArgumentsList = customAttribute.NamedArguments.Select((a, i) => { return GetParam(a, i); }).ToList()
             };
             return model;
         }
@@ -177,6 +197,7 @@ namespace Jc.ApiHelper
                 Name = paramInfo.Name,
                 PType = ptype,
                 DefaultValue = paramInfo.DefaultValue?.ToString(),
+                CustomAttrList = paramInfo.GetCustomAttributes().Select(a => GetCustomAttribute(a)).ToList(),
                 Position = paramInfo.Position + 1
             };
             return param;
@@ -235,9 +256,14 @@ namespace Jc.ApiHelper
                 Id = fiId,
                 PType = ptype,
                 ParamValue = value,
-                CustomerAttrList = fi.CustomAttributes.Select(a => GetCustomerAttribute(a)).ToList(),
+                CustomAttrList = fi.CustomAttributes.Select(a => GetCustomAttribute(a)).ToList(),
                 Position = index + 1
             };
+
+            if (fi.CustomAttributes.Count() > 0)
+            {
+
+            }
             return param;
         }
 
@@ -268,9 +294,13 @@ namespace Jc.ApiHelper
                 Name = pi.Name,
                 Id = piId,
                 PType = ptype,
-                CustomerAttrList = pi.CustomAttributes.Select(a => GetCustomerAttribute(a)).ToList(),
+                CustomAttrList = pi.CustomAttributes.Select(a => GetCustomAttribute(a)).ToList(),
                 Position = index + 1
             };
+            if(pi.CustomAttributes.Count()>0)
+            {
+
+            }
             return param;
         }
 
@@ -292,7 +322,7 @@ namespace Jc.ApiHelper
                 PTypeDic.Add(ptype.Id, ptype);
                 if (!IsIgnoreType(type))
                 {   //忽略系统类型 忽略类型,不生成属性列表 自定义特性列表忽略
-                    //ptype.CustomerAttrList = GetCustomerAttributes(type);
+                    //ptype.CustomAttrList = GetCustomAttributes(type);
                     if (type.IsEnum)
                     {
                         ptype.PiList = GetEnumPiList(type);
@@ -342,6 +372,8 @@ namespace Jc.ApiHelper
             }
             return result;
         }
+
+
         #endregion
 
     }
