@@ -78,7 +78,7 @@ namespace Jc.ApiHelper
                         controller = GetControllerModel(actionDescriptor);
                         if (controller.ControllerName == "ApiHelper")
                         {
-                            // continue;
+                            continue;
                         }
                         controllerList.Add(controller);
                     }
