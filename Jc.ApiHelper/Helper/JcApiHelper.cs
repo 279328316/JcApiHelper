@@ -157,15 +157,20 @@ namespace Jc.ApiHelper
         /// 获取所有Controller
         /// </summary>
         /// <returns></returns>
-        public static List<ControllerModel> GetControllerList()
+        public static List<ControllerModel> GetControllerList(bool withActions = false)
         {
             //InitAllControllerNote();
-            List<ControllerModel> list = controllerList.Select(a =>
-                            new ControllerModel() { 
-                                Id = a.Id,
-                                AreaName = a.AreaName,
-                                ControllerName = a.ControllerName
-                            }).ToList();
+            List<ControllerModel> list = controllerList;
+            if (!withActions)
+            {
+                list = controllerList.Select(a =>
+                                new ControllerModel()
+                                {
+                                    Id = a.Id,
+                                    AreaName = a.AreaName,
+                                    ControllerName = a.ControllerName
+                                }).ToList();
+            }
             return list;
         }
 
