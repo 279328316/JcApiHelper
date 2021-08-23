@@ -20,7 +20,6 @@ namespace Jc.ApiHelper
         public static IApplicationBuilder UseJcApiHelper(this IApplicationBuilder app)
         {
             app.UseMiddleware<JcApiHelperUIMiddleware>();
-            JcApiHelper.UseJcApiHelper();
             return app;
         }
     }

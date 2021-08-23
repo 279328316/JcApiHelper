@@ -18,7 +18,6 @@ namespace Jc.ApiHelper
     public static partial class JcApiHelper
     {
         #region Fields
-        private static bool useJcApiHelper = false; //是否启用JcApiHelper标识
         private static List<ControllerModel> controllerList = new List<ControllerModel>();
 
         /// <summary>
@@ -33,21 +32,13 @@ namespace Jc.ApiHelper
         #region Init Methods
 
         /// <summary>
-        /// 是否使用JcApiHelper
-        /// </summary>
-        public static void UseJcApiHelper()
-        {
-            useJcApiHelper = true;
-        }
-
-        /// <summary>
         /// 初始化Helper
         /// 参数actionProvider.在Controller构造方法中注入IActionDescriptorCollectionProvider
         /// </summary>
         /// <param name="actionProvider"></param>
         public static void Init(IActionDescriptorCollectionProvider actionProvider)
         {
-            if (controllerList.Count<=0 && useJcApiHelper)
+            if (controllerList.Count<=0)
             {
                 InitController(actionProvider);
             }
