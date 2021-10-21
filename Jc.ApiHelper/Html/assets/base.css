@@ -384,8 +384,7 @@ input.ckinput{/*解决文字12px时,checkBox,radioButton 文字对齐问题*/
   vertical-align:middle; margin-top:-2px; margin-bottom:1px;margin-left:5px;
 }
 .clearfix{
-  *zoom:1;/*用于解决IE6，IE7浮动问题*/
-
+  zoom:1;/*用于解决IE6，IE7浮动问题*/
 }
 .clearfix::after{
   clear:both;
