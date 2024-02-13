@@ -47,13 +47,13 @@ namespace Jc.ApiHelper
         /// 是否可为空
         /// </summary>
         public bool IsNullable
-        { 
+        {
             get 
             {
                 bool result = false;
                 result = SourceType.CustomAttributes.Any(a => a.AttributeType.Name.Contains("NullableAttribute"));
                 return result; 
-            } 
+            }
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Jc.ApiHelper
             get 
             {
                 bool result = false;
-                result = SourceType.CustomAttributes.Any(a => a.AttributeType.Name.Contains("NullableAttribute"));
+                result = SourceType.IsValueType;
                 return result; 
             } 
         }

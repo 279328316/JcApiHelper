@@ -48,6 +48,20 @@ namespace Jc.ApiHelper.Mvc.Controllers
         }
 
         /// <summary>
+        /// 获取记录
+        /// 非空参数验证
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>PermissionDto</returns>
+        [HttpPost]
+        public PermissionDto GetPermissionById(Guid? id)
+        {
+            ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
+            PermissionDto dto = Dbc.Db.GetById<PermissionDto>(id);
+            return dto;
+        }
+
+        /// <summary>
         /// 保存记录
         /// </summary>
         /// <returns>bool</returns>

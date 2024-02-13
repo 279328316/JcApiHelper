@@ -124,6 +124,12 @@ namespace Jc.ApiHelper
         /// <param name="actionDescriptor"></param>
         private static ActionModel GetActionModel(ControllerActionDescriptor actionDescriptor)
         {
+            List<CustomAttrModel> customAttrList = actionDescriptor.MethodInfo.CustomAttributes.Select((a, index) =>
+                                        GetCustomAttribute(a, index)).ToList();
+            List<ParamModel> inputParams = actionDescriptor.Parameters.Select((a, index) =>
+                                    GetParam(((ControllerParameterDescriptor)a).ParameterInfo)).ToList();
+            ParamModel returnParam = GetParam(actionDescriptor.MethodInfo.ReturnParameter);
+
             ActionModel action = new ActionModel()
             {
                 Id = TypeHelper.GetMethodModuleMark(actionDescriptor.MethodInfo),
@@ -133,12 +139,9 @@ namespace Jc.ApiHelper
                 ActionName = actionDescriptor.ActionName,
                 ActionFullName = actionDescriptor.DisplayName ?? string.Empty,
                 RouteTemplate = actionDescriptor.AttributeRouteInfo?.Template ?? string.Empty,
-
-                CustomAttrList = actionDescriptor.MethodInfo.CustomAttributes.Select((a, index) =>
-                                        GetCustomAttribute(a, index)).ToList(),
-                InputParameters = actionDescriptor.Parameters.Select((a, index) =>
-                                    GetParam(((ControllerParameterDescriptor)a).ParameterInfo)).ToList(),
-                ReturnParameter = GetParam(actionDescriptor.MethodInfo.ReturnParameter)
+                CustomAttrList = customAttrList,
+                InputParameters = inputParams,
+                ReturnParameter = returnParam
             };
             return action;
         }

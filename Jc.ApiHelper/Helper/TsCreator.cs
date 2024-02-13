@@ -469,10 +469,11 @@ namespace Jc.ApiHelper
             #region 处理输入参数
             if (inputParams.Count > 0)
             {
-                if (inputParams.Count == 1 && inputParams[0].PType.IsValueType)
-                {
+                if (inputParams.Count == 1 && !inputParams[0].PType.IsValueType
+                    && inputParams[0].PType.TypeName.ToLower() != "string")
+                {   // 如果输入参数为引用类型,直接使用对象作为请求参数
                     ParamModel inputParam = inputParams[0];
-                    inputParamStr = $"{GetNetType(inputParam.PType)} {inputParam.Name}";
+                    inputParamStr = $"{GetNetType(inputParam)} {inputParam.Name}";
                     inputParamName = inputParam.Name;
                     if (inputParam.IsIEnumerable)
                     {   // 如果参数类型为可枚举类型,设置请求类型为Json格式
@@ -491,7 +492,7 @@ namespace Jc.ApiHelper
                             inputParamStr += ", ";
                             ajaxParamStr += "\r\n";
                         }
-                        inputParamStr += $"{GetNetType(action.InputParameters[i].PType)} {action.InputParameters[i].Name}";
+                        inputParamStr += $"{GetNetType(action.InputParameters[i])} {action.InputParameters[i].Name}";
                         if (action.InputParameters[i].HasDefaultValue)
                         {
                             string? defaultValue = action.InputParameters[i].DefaultValue == null ? "null" : action.InputParameters[i].DefaultValue!.ToString();
@@ -513,15 +514,42 @@ namespace Jc.ApiHelper
             }
             #endregion
 
-            returnParamTypeStr = GetNetType(action.ReturnParameter.PType);
-
+            returnParamTypeStr = GetNetType(action.ReturnParameter);
             if(action.CustomAttrList.Any(a=>a.Name == "AllowAnonymous"))
             {
                 needLogin = "false";
             }
+            string actionSummary = "";
+            #region 设置ActionSummary
+            if (!string.IsNullOrEmpty(action.Summary))
+            {   // 读取的Summary中,多行时,存在较长空格,需要替换处理.
+                List<string> summaryList = new List<string>();
+                if (action.Summary.Contains("\r\n"))
+                {
+                    summaryList = action.Summary.Split("\r\n").Select(a => a.Trim()).ToList();
+                }
+                else if (action.Summary.Contains("\n"))
+                {
+                    summaryList = action.Summary.Split("\n").Select(a => a.Trim()).ToList();
+                }
+                else
+                {
+                    summaryList.Add(action.Summary);
+                }
+                foreach (string summary in summaryList)
+                {
+                    actionSummary += $"        /// {summary}\r\n";
+                }
+            }
+            else
+            {
+                actionSummary = action.ActionName;
+            }
+            #endregion
+
             strBuilder.AppendLine(
                 $"        /// <summary>\r\n" +
-                $"        /// {(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}\r\n" +
+                $"{actionSummary}" +
                 $"        /// </summary>");
             strBuilder.AppendLine($"        public static {returnParamTypeStr} {action.ActionName}({inputParamStr})");
             strBuilder.AppendLine("        {");
@@ -645,12 +673,13 @@ namespace Jc.ApiHelper
 
 
         /// <summary>
-        /// c#中的数据类型与TsType对照
+        /// c#中的数据类型
         /// </summary>
-        /// <param name="ptype"></param>
+        /// <param name="paramModel"></param>
         /// <returns></returns>
-        private string GetNetType(PTypeModel ptype)
+        private string GetNetType(ParamModel paramModel)
         {
+            PTypeModel ptype = paramModel.PType;
             if (ptype == null)
             {
                 return "void";
@@ -665,15 +694,11 @@ namespace Jc.ApiHelper
             else if (ptype.IsIEnumerable)
             {   //列表类型特殊处理
                 PTypeModel enumPType = JcApiHelper.GetPTypeModel(ptype.EnumItemId);
-                netTypeStr = $"List<{GetNetType(enumPType)}>";
+                netTypeStr = $"List<{GetNetType(enumPType.TypeName)}>";
             }
             else
             {
                 netTypeStr = GetNetType(ptype.TypeName);
-            }
-            if(ptype.IsNullable)
-            {
-                netTypeStr = $"{netTypeStr}?";
             }
             return netTypeStr;
         }

@@ -35,16 +35,71 @@ namespace Jc.ApiHelper.Mvc.Controllers
         }
 
         /// <summary>
+        /// 获取记录Count
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>GlobalsettingDto</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public int? GetGlobalsettingCount()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// 获取记录名称
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>GlobalsettingDto</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public string? GetGlobalsettingName()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// 获取记录Id
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>GlobalsettingDto</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public Guid? GetGlobalsettingId()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// 获取记录
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>GlobalsettingDto</returns>
         [HttpPost]
         [AllowAnonymous]
-        public GlobalsettingDto? GetGlobalsetting(Guid id)
+        public GlobalsettingDto? GetGlobalsetting(Guid? id)
         {
             ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
             GlobalsettingDto? dto = Dbc.Db.GetById<GlobalsettingDto>(id);
+            return dto;
+        }
+
+        /// <summary>
+        /// 获取记录
+        /// 非空参数验证
+        /// SummaryTest
+        /// TTTT
+        /// 123456
+        /// SummaryTest2
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>GlobalsettingDto</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public GlobalsettingDto GetGlobalsettingById(Guid id)
+        {
+            ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
+            GlobalsettingDto dto = Dbc.Db.GetById<GlobalsettingDto>(id);
             return dto;
         }
 
