@@ -60,21 +60,24 @@ namespace Jc.ApiHelper
                 List<ActionDescriptor> actionDescList = actionProvider.ActionDescriptors.Items.ToList();
                 for (int i = 0; i < actionDescList.Count; i++)
                 {
-                    ControllerActionDescriptor actionDescriptor = actionDescList[i] as ControllerActionDescriptor;
-
-                    ControllerModel controller = controllerList.Where(a =>
-                        a.Id == TypeHelper.GetModuleMark(actionDescriptor.ControllerTypeInfo)).FirstOrDefault();
-                    if (controller == null)
+                    ControllerActionDescriptor? actionDescriptor = actionDescList[i] as ControllerActionDescriptor;
+                    if (actionDescriptor != null)
                     {
-                        controller = GetControllerModel(actionDescriptor);
-                        if (controller.ControllerName == "ApiHelper")
+                        ControllerModel controller = controllerList.Where(a =>
+                            a.Id == TypeHelper.GetModuleMark(actionDescriptor.ControllerTypeInfo)).FirstOrDefault()!;
+                        if (controller == null)
                         {
-                            continue;
+                            controller = GetControllerModel(actionDescriptor);
+                            if (controller.ControllerName == "ApiHelper")
+                            {
+                                continue;
+                            }
+                            controllerList.Add(controller);
                         }
-                        controllerList.Add(controller);
+                        ActionModel action = GetActionModel(actionDescriptor);
+                        action.Index = controller.ActionList.Count + 1;
+                        controller.ActionList.Add(action);
                     }
-                    ActionModel action = GetActionModel(actionDescriptor);
-                    controller.ActionList.Add(action);
                 }
                 #endregion
 
@@ -105,12 +108,12 @@ namespace Jc.ApiHelper
             ControllerModel controller = new ControllerModel()
             {
                 Id = TypeHelper.GetModuleMark(controllerTypeInfo),
-                FullName = controllerTypeInfo.FullName,
+                FullName = controllerTypeInfo.FullName ?? string.Empty,
                 CustomAttrList = controllerTypeInfo.CustomAttributes.Select(a => GetCustomAttribute(a)).ToList(),
                 ModuleName = controllerTypeInfo.Module.Name,
                 AreaName = actionDescriptor.RouteValues.Keys.Contains("area") ?
-                                    actionDescriptor.RouteValues["area"] : null,
-                ControllerName = actionDescriptor.RouteValues["controller"]
+                                    actionDescriptor.RouteValues["area"]! : string.Empty,
+                ControllerName = actionDescriptor.RouteValues["controller"]!
             };
             return controller;
         }
@@ -125,11 +128,11 @@ namespace Jc.ApiHelper
             {
                 Id = TypeHelper.GetMethodModuleMark(actionDescriptor.MethodInfo),
                 AreaName = actionDescriptor.RouteValues.Keys.Contains("area") ?
-                                    actionDescriptor.RouteValues["area"] : null,
+                                    actionDescriptor.RouteValues["area"]! : string.Empty,
                 ControllerName = actionDescriptor.ControllerName,
                 ActionName = actionDescriptor.ActionName,
-                ActionFullName = actionDescriptor.DisplayName,
-                RouteTemplate = actionDescriptor.AttributeRouteInfo?.Template,
+                ActionFullName = actionDescriptor.DisplayName ?? string.Empty,
+                RouteTemplate = actionDescriptor.AttributeRouteInfo?.Template ?? string.Empty,
 
                 CustomAttrList = actionDescriptor.MethodInfo.CustomAttributes.Select((a, index) =>
                                         GetCustomAttribute(a, index)).ToList(),
@@ -300,7 +303,7 @@ namespace Jc.ApiHelper
         /// <returns></returns>
         public static PTypeModel GetPTypeModel(string typeId)
         {
-            PTypeModel ptype = null;
+            PTypeModel ptype = new PTypeModel();
             if (PTypeDic.ContainsKey(typeId))
             {
                 PTypeModel sourcePType = PTypeDic[typeId];
@@ -315,7 +318,7 @@ namespace Jc.ApiHelper
                     IsIEnumerable = sourcePType.IsIEnumerable,
                     EnumItemId = sourcePType.EnumItemId,
                     EnumItemName = sourcePType.EnumItemName,
-                    PiList = sourcePType.PiList?.Where(pi => pi.IsJsonIgnore != true).ToList()
+                    PiList = sourcePType.PiList.Where(pi => pi.IsJsonIgnore != true).ToList()
                 };
             }
             return ptype;

@@ -25,7 +25,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <param name="order">排序方向</param>
         /// <returns>robj</returns>
         [HttpPost]
-        public PageResult<PermissionDto> QueryPermissionList(int pageIndex = 1, int pageSize = 10, string sort = null, string order = null)
+        public PageResult<PermissionDto> QueryPermissionList(int pageIndex = 1, int pageSize = 10,int? pid = 10, string? sort = null, string? order = null)
         {
             IQuery<PermissionDto> query = Dbc.Db.IQuery<PermissionDto>(Request.Form)
                 .AutoOrderBy(sort, order, a => a.Id, Sorting.Asc)
@@ -40,10 +40,10 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <param name="id">id</param>
         /// <returns>PermissionDto</returns>
         [HttpPost]
-        public PermissionDto GetPermission(Guid id)
+        public PermissionDto? GetPermission(Guid id)
         {
             ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
-            PermissionDto dto = Dbc.Db.GetById<PermissionDto>(id);
+            PermissionDto? dto = Dbc.Db.GetById<PermissionDto>(id);
             return dto;
         }
 
@@ -57,7 +57,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             CheckPermission(dto);//检查用户输入
             if (dto.Id != Guid.Empty)
             {
-                PermissionDto dbDto = Dbc.Db.GetById<PermissionDto>(dto.Id);
+                PermissionDto? dbDto = Dbc.Db.GetById<PermissionDto>(dto.Id);
                 ExHelper.ThrowIfNull(dbDto,"查找更新记录失败.");
                 dbDto.CopyTo(dto, a => a.Id);
             }
@@ -70,7 +70,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// </summary>
         /// <param name="dto">Dto 对象</param>
         /// <returns></returns>
-        private void CheckPermission(PermissionDto dto)
+        private void CheckPermission(PermissionDto? dto)
         {
         }
 

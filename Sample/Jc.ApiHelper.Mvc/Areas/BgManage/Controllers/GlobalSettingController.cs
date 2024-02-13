@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Jc.Core;
 using Jc.ApiHelper.Mvc.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Jc.ApiHelper.Mvc.Controllers
 {
@@ -25,7 +26,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <param name="order">排序方向</param>
         /// <returns>robj</returns>
         [HttpPost]
-        public PageResult<GlobalsettingDto> QueryGlobalsettingList(int pageIndex = 1, int pageSize = 10, string sort = null, string order = null)
+        public PageResult<GlobalsettingDto> QueryGlobalsettingList(int pageIndex = 1, int pageSize = 10,int? pid = 10, string? sort = null, string? order = null)
         {
             IQuery<GlobalsettingDto> query = Dbc.GetIQuery<GlobalsettingDto>(Request.Form)
                 .AutoOrderBy(sort, order, a => a.Id, Sorting.Asc)
@@ -39,10 +40,11 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <param name="id">id</param>
         /// <returns>GlobalsettingDto</returns>
         [HttpPost]
-        public GlobalsettingDto GetGlobalsetting(Guid id)
+        [AllowAnonymous]
+        public GlobalsettingDto? GetGlobalsetting(Guid id)
         {
             ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
-            GlobalsettingDto dto = Dbc.Db.GetById<GlobalsettingDto>(id);
+            GlobalsettingDto? dto = Dbc.Db.GetById<GlobalsettingDto>(id);
             return dto;
         }
 

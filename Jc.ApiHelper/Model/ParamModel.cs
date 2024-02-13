@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.AccessControl;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -18,12 +19,12 @@ namespace Jc.ApiHelper
         /// <summary>
         /// Id
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// 参数名
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 类型Id
@@ -61,6 +62,16 @@ namespace Jc.ApiHelper
         public string EnumItemName { get { return PType.EnumItemName; } }
 
         /// <summary>
+        /// 是否可为空
+        /// </summary>
+        public bool IsNullable { get { return PType.IsNullable; } }
+
+        /// <summary>
+        /// 是否为值类型参数
+        /// </summary>
+        public bool IsValueType { get { return PType.IsValueType; } }
+
+        /// <summary>
         /// 是否为Json序列化忽略属性
         /// </summary>
         [JsonIgnore]
@@ -80,12 +91,12 @@ namespace Jc.ApiHelper
         /// <summary>
         /// Summary
         /// </summary>
-        public string Summary { get; set; }
-        
+        public string Summary { get; set; } = string.Empty;
+
         /// <summary>
         /// 值
         /// </summary>
-        public object ParamValue { get; set; }
+        public object? ParamValue { get; set; }
 
         /// <summary>
         /// 位置
@@ -95,23 +106,28 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 是否可选
         /// </summary>
-        public bool? IsOptional { get; set; } = null;
+        public bool IsOptional { get; set; }
+
+        /// <summary>
+        /// 是否有默认值
+        /// </summary>
+        public bool HasDefaultValue { get; set; }
 
         /// <summary>
         /// 默认值
         /// </summary>
-        public string DefaultValue { get; set; }
+        public object? DefaultValue { get; set; } = null;
 
         /// <summary>
         /// 特性列表
         /// </summary>
-        public List<CustomAttrModel> CustomAttrList { get; set; }
+        public List<CustomAttrModel> CustomAttrList { get; set; } = new List<CustomAttrModel>();
 
         /// <summary>
         /// 类型信息对象
         /// </summary>
         [JsonIgnore]
-        public PTypeModel PType { get; set; }
+        public PTypeModel PType { get; set; } = new PTypeModel();
         #endregion
 
         #region Ctor

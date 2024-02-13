@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -272,7 +273,42 @@ namespace Jc.ApiHelper
 
             tsService.JcCode = headerCodeBuilder.ToString() + jcCodeBuilder.ToString();
             tsService.CommonCode = headerCodeBuilder.ToString() + commonCodeBuilder.ToString();
+            tsService.ApiCode = GetControllerApiCode(controller);
             return tsService;
+        }
+
+        /// <summary>
+        /// 获取Controller .Net Api Code
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        private string GetControllerApiCode(ControllerModel controller)
+        {
+            StringBuilder codeBuilder = new StringBuilder();
+            codeBuilder.AppendLine("using System;");
+            codeBuilder.AppendLine("using System.Linq;");
+            codeBuilder.AppendLine("using System.Collections.Generic;");
+            codeBuilder.AppendLine("using Jc;");
+            codeBuilder.AppendLine();
+
+            codeBuilder.AppendLine($"namespace {controller.ModuleName.Replace(".dll","")}.ApiHelper");
+            codeBuilder.AppendLine("{");
+            codeBuilder.AppendLine(
+                $"    /// <summary>\r\n" +
+                $"    /// {(string.IsNullOrEmpty(controller.Summary) ? controller.ControllerName : controller.Summary)}\r\n" +
+                $"    /// </summary>");
+            codeBuilder.AppendLine($"    public class {controller.ControllerName}Api");
+            codeBuilder.AppendLine("    {");
+            for (int i = 0; i < controller.ActionList.Count; i++)
+            {
+                ActionModel action = controller.ActionList[i];
+                string actionCode = GetClientApiCode(action);
+                codeBuilder.AppendLine(actionCode);
+            }
+            codeBuilder.AppendLine("    }");
+            codeBuilder.AppendLine("}");
+            string code = codeBuilder.ToString();
+            return code;
         }
 
         #region 获取Ts Service CodeModel
@@ -284,7 +320,8 @@ namespace Jc.ApiHelper
             TsServiceModel tsService = new TsServiceModel()
             {
                 JcCode = GetTsServiceJcCode(action),
-                CommonCode = GetTsServiceCommonCode(action)
+                CommonCode = GetTsServiceCommonCode(action),
+                ApiCode = GetClientApiCode(action),
             };
             return tsService;
         }
@@ -412,6 +449,92 @@ namespace Jc.ApiHelper
             strBuilder.AppendLine("  }");
             return strBuilder.ToString();
         }
+
+        /// <summary>
+        /// 生成C# Api 调用接口
+        /// </summary>
+        private string GetClientApiCode(ActionModel action)
+        {
+            StringBuilder strBuilder = new StringBuilder();
+            string actionRouteName = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
+                                        + $"{action.ControllerName}/{action.ActionName}";
+            string inputParamName = "";
+            string inputParamStr = "";
+            string ajaxParamStr = "";
+            string returnParamTypeStr = "";
+            string requestType = "HttpContentType.Form";
+            string needLogin = "true";
+            List<ParamModel> inputParams = action.InputParameters;
+
+            #region 处理输入参数
+            if (inputParams.Count > 0)
+            {
+                if (inputParams.Count == 1 && inputParams[0].PType.IsValueType)
+                {
+                    ParamModel inputParam = inputParams[0];
+                    inputParamStr = $"{GetNetType(inputParam.PType)} {inputParam.Name}";
+                    inputParamName = inputParam.Name;
+                    if (inputParam.IsIEnumerable)
+                    {   // 如果参数类型为可枚举类型,设置请求类型为Json格式
+                        requestType = "HttpContentType.Json";
+                    }
+                }
+                else
+                {
+                    inputParamName = "data";
+                    ajaxParamStr = $"Dictionary<string, object?> {inputParamName} = new Dictionary<string, object?>()";
+                    ajaxParamStr += "\r\n            {\r\n";
+                    for (int i = 0; i < action.InputParameters.Count; i++)
+                    {
+                        if (i > 0)
+                        {
+                            inputParamStr += ", ";
+                            ajaxParamStr += "\r\n";
+                        }
+                        inputParamStr += $"{GetNetType(action.InputParameters[i].PType)} {action.InputParameters[i].Name}";
+                        if (action.InputParameters[i].HasDefaultValue)
+                        {
+                            string? defaultValue = action.InputParameters[i].DefaultValue == null ? "null" : action.InputParameters[i].DefaultValue!.ToString();
+                            inputParamStr += $" = {defaultValue}";
+                        }
+                        ajaxParamStr += $"                {{\"{action.InputParameters[i].Name}\", {action.InputParameters[i].Name}}},";
+                    }
+                    ajaxParamStr += "\r\n            }";
+                    if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
+                             && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
+                    {   //处理分页查询方法                    
+                        inputParamStr += $", Dictionary<string,object?>? queryParams = null";
+                        ajaxParamStr += $"\r\n            if (queryParams != null)\r\n" +
+                                        $"            {{\r\n" +
+                                        $"                data = data.Concat(queryParams).ToDictionary(kv => kv.Key, kv => kv.Value);\r\n" +
+                                        $"            }}";
+                    }
+                }
+            }
+            #endregion
+
+            returnParamTypeStr = GetNetType(action.ReturnParameter.PType);
+
+            if(action.CustomAttrList.Any(a=>a.Name == "AllowAnonymous"))
+            {
+                needLogin = "false";
+            }
+            strBuilder.AppendLine(
+                $"        /// <summary>\r\n" +
+                $"        /// {(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}\r\n" +
+                $"        /// </summary>");
+            strBuilder.AppendLine($"        public static {returnParamTypeStr} {action.ActionName}({inputParamStr})");
+            strBuilder.AppendLine("        {");
+            if (!string.IsNullOrWhiteSpace(ajaxParamStr))
+            {
+                strBuilder.AppendLine($"            {ajaxParamStr}");
+            }
+            strBuilder.AppendLine($"            {returnParamTypeStr} result = ApiHelper.Post<{returnParamTypeStr}>(\"{actionRouteName}\", {inputParamName}, {requestType}, {needLogin});");
+            strBuilder.AppendLine($"            return result;");
+            strBuilder.AppendLine("        }");
+            return strBuilder.ToString();
+        }
+
         #endregion
 
         #region Other Methods
@@ -448,7 +571,7 @@ namespace Jc.ApiHelper
                 tsTypeStr = "any";
             }
             else if (ptype.IsIEnumerable)
-            {   //枚举类型特殊处理
+            {   //列表类型特殊处理
                 PTypeModel enumPType = JcApiHelper.GetPTypeModel(ptype.EnumItemId);
                 tsTypeStr = $"{GetTsType(enumPType)}[]";
             }
@@ -517,6 +640,94 @@ namespace Jc.ApiHelper
                 #endregion
             }
             return tsTypeStr;
+        }
+
+
+
+        /// <summary>
+        /// c#中的数据类型与TsType对照
+        /// </summary>
+        /// <param name="ptype"></param>
+        /// <returns></returns>
+        private string GetNetType(PTypeModel ptype)
+        {
+            if (ptype == null)
+            {
+                return "void";
+            }
+            string netTypeStr = "";
+            Type type = ptype.SourceType;
+
+            if (type == typeof(IActionResult))
+            {
+                netTypeStr = "object";
+            }
+            else if (ptype.IsIEnumerable)
+            {   //列表类型特殊处理
+                PTypeModel enumPType = JcApiHelper.GetPTypeModel(ptype.EnumItemId);
+                netTypeStr = $"List<{GetNetType(enumPType)}>";
+            }
+            else
+            {
+                netTypeStr = GetNetType(ptype.TypeName);
+            }
+            if(ptype.IsNullable)
+            {
+                netTypeStr = $"{netTypeStr}?";
+            }
+            return netTypeStr;
+        }
+
+        /// <summary>
+        /// c#中的数据类型与TsType对照
+        /// </summary>
+        /// <param name="typeName">类型名称</param>
+        /// <returns></returns>
+        private string GetNetType(string typeName)
+        {
+            string netTypeStr = typeName;
+
+            List<string> numberTypeList =
+                ("int,int?,int16,int16?,int32,int32?,int64,int64?,decimal,decimal?," +
+                "double,double?,byte,byte?,long,long?,single,single?").Split(',').ToList();
+
+            List<string> boolTypeList = ("bool,bool?,boolean,boolean?").Split(',').ToList();
+
+            List<string> stringTypeList =
+                ("string,string?").Split(',').ToList();
+            List<string> guidTypeList =
+                ("guid,guid?").Split(',').ToList();
+            List<string> dateTimeTypeList =
+                ("datetime,datetime?").Split(',').ToList();
+
+            if (numberTypeList.Contains(typeName.ToLower()))
+            {
+                if (typeName.Contains("Int32"))
+                {
+                    netTypeStr = typeName.ToLower().Replace("int32", "int");
+                }
+                else if (typeName.Contains("Int64"))
+                {
+                    netTypeStr = typeName.ToLower().Replace("int64", "long");
+                }
+                else
+                {
+                    netTypeStr = typeName.ToLower();
+                }
+            }
+            else if (stringTypeList.Contains(typeName.ToLower()))
+            {
+                netTypeStr = typeName.ToLower();
+            }
+            else if (boolTypeList.Contains(typeName.ToLower()))
+            {
+                netTypeStr = "bool";
+            }
+            else
+            {
+                netTypeStr = typeName;
+            }
+            return netTypeStr;
         }
 
         #endregion

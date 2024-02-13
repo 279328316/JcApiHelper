@@ -194,9 +194,10 @@ namespace Jc.ApiHelper
             PTypeModel ptype = GetPType(paramInfo.ParameterType);
             ParamModel param = new ParamModel()
             {
-                Name = paramInfo.Name,
+                Name = paramInfo.Name ?? string.Empty,
                 PType = ptype,
-                DefaultValue = paramInfo.DefaultValue?.ToString(),
+                HasDefaultValue = paramInfo.HasDefaultValue,
+                DefaultValue = paramInfo.DefaultValue,
                 CustomAttrList = paramInfo.GetCustomAttributes().Select(a => GetCustomAttribute(a)).ToList(),
                 Position = paramInfo.Position + 1
             };
@@ -310,7 +311,7 @@ namespace Jc.ApiHelper
         /// <param name="type"></param>
         private static PTypeModel GetPType(Type type)
         {
-            PTypeModel ptype = null;
+            PTypeModel ptype = new PTypeModel();
             string id = TypeHelper.GetModuleMark(type);
             if (PTypeDic.Keys.Contains(id))
             {

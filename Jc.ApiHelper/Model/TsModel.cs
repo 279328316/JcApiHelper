@@ -157,5 +157,10 @@ namespace Jc.ApiHelper
         /// Common Service Code
         /// </summary>
         public string CommonCode { get; set; }
+
+        /// <summary>
+        /// Common C# Api Code
+        /// </summary>
+        public string ApiCode { get; set; }
     }
 }
