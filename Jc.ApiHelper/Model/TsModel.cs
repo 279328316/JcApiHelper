@@ -37,18 +37,18 @@ namespace Jc.ApiHelper
         /// 结果对象Id
         /// ControllerId,ActionId,PTypeId
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// 结果对象名
         /// ControllerName,ActionName,PTypeName
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 备注描述
         /// </summary>
-        public string Summary { get; set; }
+        public string? Summary { get; set; } = string.Empty;
 
         /// <summary>
         /// 类属性列表
@@ -82,32 +82,32 @@ namespace Jc.ApiHelper
         /// <summary>
         /// PTypeId
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// 参数名
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Summary
         /// </summary>
-        public string Summary { get; set; }
+        public string Summary { get; set; } = string.Empty;
 
         /// <summary>
         /// 类属性列表
         /// </summary>
-        public List<TsPi> PiList { get; set; }
+        public List<TsPi> PiList { get; set; } = new List<TsPi>();
 
         /// <summary>
         /// Summary
         /// </summary>
-        public string TsModelCode { get; set; }
+        public string TsModelCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Summary
         /// </summary>
-        public string PgQueryModelCode { get; set; }
+        public string PgQueryModelCode { get; set; } = string.Empty;
 
         #endregion
 
@@ -130,17 +130,17 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 参数名
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Ts参数类型
         /// </summary>
-        public string TsType { get; set; }
+        public string TsType { get; set; } = string.Empty;
 
         /// <summary>
         /// Summary
         /// </summary>
-        public string Summary { get; set; }
+        public string Summary { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -151,16 +151,16 @@ namespace Jc.ApiHelper
         /// <summary>
         /// Jc Service Code
         /// </summary>
-        public string JcCode { get; set; }
+        public string JcCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Common Service Code
         /// </summary>
-        public string CommonCode { get; set; }
+        public string CommonCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Common C# Api Code
         /// </summary>
-        public string ApiCode { get; set; }
+        public string ApiCode { get; set; } = string.Empty;
     }
 }

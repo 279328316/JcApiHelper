@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Jc.ApiHelper
 {
@@ -293,10 +294,40 @@ namespace Jc.ApiHelper
 
             codeBuilder.AppendLine($"namespace {controller.ModuleName.Replace(".dll","")}.ApiHelper");
             codeBuilder.AppendLine("{");
+
+            string controllerSummary = "";
+            #region 设置ControllerSummary
+            if (!string.IsNullOrEmpty(controller.Summary))
+            {   // 读取的Summary中,多行时,存在较长空格,需要替换处理.
+                List<string> summaryList = new List<string>();
+                if (controller.Summary.Contains("\r\n"))
+                {
+                    summaryList = controller.Summary.Split("\r\n").Select(a => a.Trim()).ToList();
+                }
+                else if (controller.Summary.Contains("\n"))
+                {
+                    summaryList = controller.Summary.Split("\n").Select(a => a.Trim()).ToList();
+                }
+                else
+                {
+                    summaryList.Add(controller.Summary);
+                }
+                foreach (string summary in summaryList)
+                {
+                    controllerSummary += $"    /// {summary}\r\n";
+                }
+            }
+            else
+            {
+                controllerSummary = $"    /// {controller.ControllerName}Api\r\n";
+            }
+            #endregion
+
             codeBuilder.AppendLine(
                 $"    /// <summary>\r\n" +
-                $"    /// {(string.IsNullOrEmpty(controller.Summary) ? controller.ControllerName : controller.Summary)}\r\n" +
+                $"{controllerSummary}" +
                 $"    /// </summary>");
+
             codeBuilder.AppendLine($"    public class {controller.ControllerName}Api");
             codeBuilder.AppendLine("    {");
             for (int i = 0; i < controller.ActionList.Count; i++)
@@ -512,6 +543,10 @@ namespace Jc.ApiHelper
                     }
                 }
             }
+            else
+            {
+                inputParamName = "null";
+            }
             #endregion
 
             returnParamTypeStr = GetNetType(action.ReturnParameter);
@@ -543,7 +578,7 @@ namespace Jc.ApiHelper
             }
             else
             {
-                actionSummary = action.ActionName;
+                actionSummary = $"        /// {action.ActionName}\r\n";
             }
             #endregion
 
@@ -720,6 +755,10 @@ namespace Jc.ApiHelper
 
             List<string> stringTypeList =
                 ("string,string?").Split(',').ToList();
+            List<string> voidTypeList =
+                ("void").Split(',').ToList();
+            List<string> objectTypeList =
+                ("object,object?").Split(',').ToList();
             List<string> guidTypeList =
                 ("guid,guid?").Split(',').ToList();
             List<string> dateTimeTypeList =
@@ -741,6 +780,14 @@ namespace Jc.ApiHelper
                 }
             }
             else if (stringTypeList.Contains(typeName.ToLower()))
+            {
+                netTypeStr = typeName.ToLower();
+            }
+            else if (voidTypeList.Contains(typeName.ToLower()))
+            {
+                netTypeStr = typeName.ToLower();
+            }
+            else if (objectTypeList.Contains(typeName.ToLower()))
             {
                 netTypeStr = typeName.ToLower();
             }

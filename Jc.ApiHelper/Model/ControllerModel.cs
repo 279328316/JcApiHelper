@@ -55,7 +55,7 @@ namespace Jc.ApiHelper
         /// 注释,备注
         /// </summary>
         [JsonIgnore]
-        public MemberNoteModel NoteModel { get; set; }
+        public MemberNoteModel? NoteModel { get; set; }
 
         /// <summary>
         /// 特性参数列表

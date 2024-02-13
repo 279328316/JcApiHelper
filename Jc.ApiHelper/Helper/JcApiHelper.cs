@@ -199,7 +199,7 @@ namespace Jc.ApiHelper
             for (int i = 0; i < controllerList.Count; i++)
             {
                 ControllerModel controller = controllerList[i];
-                AssemblyNoteModel noteModel = noteList.FirstOrDefault(note => note.ModuleName == controller.ModuleName);
+                AssemblyNoteModel? noteModel = noteList.FirstOrDefault(note => note.ModuleName == controller.ModuleName);
                 if (noteModel == null)
                 {
                     continue;
@@ -231,9 +231,9 @@ namespace Jc.ApiHelper
         /// </summary>
         /// <param name="controllerId">controllerId</param>
         /// <returns></returns>
-        public static ControllerModel GetController(string controllerId)
+        public static ControllerModel? GetController(string controllerId)
         {
-            ControllerModel controller = controllerList.FirstOrDefault(a=>a.Id== controllerId);
+            ControllerModel? controller = controllerList.FirstOrDefault(a=>a.Id== controllerId);
             if (controller != null)
             {
                 SetControllerNote(controller);
@@ -252,10 +252,10 @@ namespace Jc.ApiHelper
             DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
             string xmlNoteFileName = controller.ModuleName.Replace(".dll", ".xml");
 
-            FileInfo fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
+            FileInfo? fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
             if (fileInfo != null)
             {
-                AssemblyNoteModel noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
+                AssemblyNoteModel? noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
                 if (noteModel != null)
                 {   //Controller 注释
                     controller.NoteModel = noteModel.MemberList.FirstOrDefault(member => member.Name == controller.Id);
@@ -286,10 +286,10 @@ namespace Jc.ApiHelper
         /// </summary>
         /// <param name="actionId">actionId</param>
         /// <returns></returns>
-        public static ActionModel GetAction(string actionId)
+        public static ActionModel? GetAction(string actionId)
         {
-            ActionModel actionModel = null;
-            ControllerModel controllerModel = controllerList.FirstOrDefault(controller =>
+            ActionModel? actionModel = null;
+            ControllerModel? controllerModel = controllerList.FirstOrDefault(controller =>
                 controller.ActionList.Any(action => action.Id == actionId));
             if (controllerModel != null)
             {
@@ -338,10 +338,10 @@ namespace Jc.ApiHelper
             DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
             string xmlNoteFileName = ptype.ModuleName.Replace(".dll", ".xml");
 
-            FileInfo fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
+            FileInfo? fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
             if (fileInfo != null)
             {
-                AssemblyNoteModel noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
+                AssemblyNoteModel? noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
                 if (noteModel != null)
                 {   //Controller 注释
                     ptype.Summary = noteModel.MemberList.FirstOrDefault(member => member.Name == ptype.Id)?.Summary;

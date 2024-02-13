@@ -37,12 +37,12 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 名称
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Summary
         /// </summary>
-        public string Summary { get; set; }
+        public string Summary { get; set; } = string.Empty;
 
         /// <summary>
         /// 参数列表
@@ -52,6 +52,6 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 返回值
         /// </summary>
-        public string Returns { get; set; }
+        public string Returns { get; set; } = string.Empty;
     }
 }

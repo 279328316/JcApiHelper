@@ -24,7 +24,7 @@ namespace Jc.ApiHelper
         /// </summary>
         /// <param name="xmlFilePath">xml文件路径</param>
         /// <returns></returns>
-        public static AssemblyNoteModel GetAssemblyNote(string xmlFilePath)
+        public static AssemblyNoteModel? GetAssemblyNote(string xmlFilePath)
         {
             if (fileAssemblyDic.ContainsKey(xmlFilePath))
             {
@@ -35,7 +35,7 @@ namespace Jc.ApiHelper
             {
                 return null;
             }
-            AssemblyNoteModel assemblyNoteModel = null;
+            AssemblyNoteModel? assemblyNoteModel = null;
             lock (fileAssemblyDic)
             {
                 if (fileAssemblyDic.ContainsKey(xmlFilePath))
@@ -48,7 +48,7 @@ namespace Jc.ApiHelper
                 assemblyNoteModel.ModuleName = fileInfo.Name.Replace(".xml", ".dll");
 
                 XmlNode memberListNode = xmlHelper.GetNode("members");
-                XmlNode memberNode = memberListNode.FirstChild;
+                XmlNode? memberNode = memberListNode.FirstChild;
                 while (memberNode != null)
                 {
                     MemberNoteModel memberModel = GetMember(memberNode);
@@ -82,7 +82,7 @@ namespace Jc.ApiHelper
                     }
                 }
             }
-            XmlNode nextNode = memberNode.FirstChild;
+            XmlNode? nextNode = memberNode.FirstChild;
             while (nextNode != null)
             {
                 string nodeText = nextNode.InnerText.Trim();
@@ -92,13 +92,16 @@ namespace Jc.ApiHelper
                         memberModel.Summary = nodeText;
                         break;
                     case "param":
-                        string paramName = null;
-                        foreach (XmlAttribute xmlAttribute in nextNode.Attributes)
+                        string? paramName = null;
+                        if (nextNode.Attributes != null)
                         {
-                            if (xmlAttribute.Name == "name")
+                            foreach (XmlAttribute xmlAttribute in nextNode.Attributes)
                             {
-                                paramName = xmlAttribute.Value;
-                                break;
+                                if (xmlAttribute.Name == "name")
+                                {
+                                    paramName = xmlAttribute.Value;
+                                    break;
+                                }
                             }
                         }
                         if (!string.IsNullOrEmpty(paramName)

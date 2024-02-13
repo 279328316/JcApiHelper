@@ -91,7 +91,7 @@ namespace Jc.ApiHelper
         /// <summary>
         /// Summary
         /// </summary>
-        public string Summary { get; set; } = string.Empty;
+        public string? Summary { get; set; } = string.Empty;
 
         /// <summary>
         /// 值

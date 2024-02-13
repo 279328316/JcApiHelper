@@ -55,14 +55,14 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetApiVersion()
         {
-            Robj<string> robj = new Robj<string>();
+            Robj<string?> robj = new Robj<string?>();
             List<Assembly> assemblyList = AppDomain.CurrentDomain.GetAssemblies().ToList();
             AppDomain currentDomain = AppDomain.CurrentDomain;
-            Assembly assembly = assemblyList.FirstOrDefault(a=>a.GetName().Name==currentDomain.FriendlyName);
+            Assembly? assembly = assemblyList.FirstOrDefault(a=>a.GetName().Name==currentDomain.FriendlyName);
             if (assembly != null)
             {
                 //AssemblyFileVersionAttribute fileVersionAttr = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
-                AssemblyInformationalVersionAttribute versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                AssemblyInformationalVersionAttribute? versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
                 robj.Result = versionAttr?.InformationalVersion;
             }
             return new JsonResult(robj);
@@ -107,7 +107,11 @@ namespace Jc.ApiHelper
                 List<ControllerModel> list = new List<ControllerModel>();
                 for (int i = 0; i < ids.Count; i++)
                 {
-                    list.Add(JcApiHelper.GetController(ids[i]));
+                    ControllerModel? controller = JcApiHelper.GetController(ids[i]);
+                    if (controller != null)
+                    {
+                        list.Add(controller);
+                    }
                 }
                 robj.Result = list;
             }
@@ -128,14 +132,14 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetController([FromForm]string controllerId)
         {
-            Robj<ControllerModel> robj = new Robj<ControllerModel>();
+            Robj<ControllerModel?> robj = new Robj<ControllerModel?>();
             try
             {
                 if (string.IsNullOrEmpty(controllerId))
                 {
                     throw new Exception("参数controllerId不能为空");
                 }
-                ControllerModel controller = JcApiHelper.GetController(controllerId);
+                ControllerModel? controller = JcApiHelper.GetController(controllerId);
                 robj.Result = controller;
             }
             catch (Exception ex)
@@ -155,14 +159,14 @@ namespace Jc.ApiHelper
         [Route("[action]")]
         public IActionResult GetAction([FromForm]string actionId)
         {
-            Robj<ActionModel> robj = new Robj<ActionModel>();
+            Robj<ActionModel?> robj = new Robj<ActionModel?>();
             try
             {
                 if (string.IsNullOrEmpty(actionId))
                 {
                     throw new Exception("参数Id不能为空");
                 }
-                ActionModel action = JcApiHelper.GetAction(actionId);
+                ActionModel? action = JcApiHelper.GetAction(actionId);
                 robj.Result = action;
             }
             catch (Exception ex)

@@ -52,13 +52,13 @@ namespace Jc.ApiHelper
         /// <summary>
         /// Summary
         /// </summary>
-        public string Summary { get { return NoteModel.Summary; } }
+        public string? Summary { get { return NoteModel?.Summary; } }
 
         /// <summary>
         /// 注释,备注
         /// </summary>
         [JsonIgnore]
-        public MemberNoteModel NoteModel { get; set; } = new MemberNoteModel();
+        public MemberNoteModel? NoteModel { get; set; } = new MemberNoteModel();
 
         /// <summary>
         /// 特性参数列表
