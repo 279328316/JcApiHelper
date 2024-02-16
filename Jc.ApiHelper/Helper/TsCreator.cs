@@ -319,13 +319,13 @@ namespace Jc.ApiHelper
             }
             else
             {
-                controllerSummary = $"    /// {controller.ControllerName}Api\r\n";
+                controllerSummary = $"    /// {controller.ControllerName}\r\n";
             }
             #endregion
 
             codeBuilder.AppendLine(
                 $"    /// <summary>\r\n" +
-                $"{controllerSummary}" +
+                $"{controllerSummary} ApiHelper" +
                 $"    /// </summary>");
 
             codeBuilder.AppendLine($"    public class {controller.ControllerName}Api");
@@ -514,8 +514,8 @@ namespace Jc.ApiHelper
                 else
                 {
                     inputParamName = "data";
-                    ajaxParamStr = $"Dictionary<string, object?> {inputParamName} = new Dictionary<string, object?>()";
-                    ajaxParamStr += "\r\n            {\r\n";
+                    ajaxParamStr = $"Dictionary<string, object?> {inputParamName} = new Dictionary<string, object?>()\r\n";
+                    ajaxParamStr += "            {\r\n";
                     for (int i = 0; i < action.InputParameters.Count; i++)
                     {
                         if (i > 0)
@@ -531,7 +531,7 @@ namespace Jc.ApiHelper
                         }
                         ajaxParamStr += $"                {{\"{action.InputParameters[i].Name}\", {action.InputParameters[i].Name}}},";
                     }
-                    ajaxParamStr += "\r\n            }";
+                    ajaxParamStr += "\r\n            };";
                     if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
                              && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
                     {   //处理分页查询方法                    
