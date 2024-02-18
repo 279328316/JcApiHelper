@@ -514,7 +514,7 @@ namespace Jc.ApiHelper
                     ParamModel inputParam = inputParams[0];
                     inputParamStr = $"{GetNetType(inputParam)} {inputParam.Name}";
                     inputParamName = inputParam.Name;
-                    inputParamSummary = $"        /// <param name=\"{inputParam.Name}\">{ReplaceReturnStr(inputParam.Summary)}</param>\r\n";
+                    inputParamSummary += $"        /// <param name=\"{inputParam.Name}\">{ReplaceReturnStr(inputParam.Summary)}</param>\r\n";
                     if (inputParam.IsIEnumerable)
                     {   // 如果参数类型为可枚举类型,设置请求类型为Json格式
                         requestType = "HttpContentType.Json";
@@ -533,7 +533,7 @@ namespace Jc.ApiHelper
                             inputParamStr += ", ";
                             ajaxParamStr += "\r\n";
                         }
-                        inputParamSummary = $"        /// <param name=\"{param.Name}\">{ReplaceReturnStr(param.Summary)}</param>\r\n";
+                        inputParamSummary += $"        /// <param name=\"{param.Name}\">{ReplaceReturnStr(param.Summary)}</param>\r\n";
                         inputParamStr += $"{GetNetType(param)} {param.Name}";
                         if (param.HasDefaultValue)
                         {
