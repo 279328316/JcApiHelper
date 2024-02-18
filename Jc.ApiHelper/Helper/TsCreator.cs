@@ -551,7 +551,7 @@ namespace Jc.ApiHelper
                              && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
                     {   //处理分页查询方法                    
                         inputParamStr += $", Dictionary<string,object?>? queryParams = null";
-                        inputParamSummary = $"        /// <param name=\"queryParams\">自定义查询参数</param>\r\n";
+                        inputParamSummary += $"        /// <param name=\"queryParams\">自定义查询参数</param>\r\n";
                         ajaxParamStr += $"\r\n            if (queryParams != null)\r\n" +
                                         $"            {{\r\n" +
                                         $"                data = data.Concat(queryParams).ToDictionary(kv => kv.Key, kv => kv.Value);\r\n" +
