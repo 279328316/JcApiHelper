@@ -312,20 +312,26 @@ namespace Jc.ApiHelper
                 {
                     summaryList.Add(controller.Summary);
                 }
-                foreach (string summary in summaryList)
+                for (int i = 0; i < summaryList.Count; i++)
                 {
-                    controllerSummary += $"    /// {summary}\r\n";
+                    string summary = summaryList[i];
+                    controllerSummary += $"    /// {summary}";
+                    if (i < summaryList.Count - 1)
+                    {
+                        controllerSummary += "\r\n";
+                    }
                 }
+                controllerSummary += " ApiHelper\r\n";
             }
             else
             {
-                controllerSummary = $"    /// {controller.ControllerName}\r\n";
+                controllerSummary = $"    /// {controller.ControllerName} ApiHelper\r\n";
             }
             #endregion
 
             codeBuilder.AppendLine(
                 $"    /// <summary>\r\n" +
-                $"{controllerSummary} ApiHelper" +
+                $"{controllerSummary}" +
                 $"    /// </summary>");
 
             codeBuilder.AppendLine($"    public class {controller.ControllerName}Api");
@@ -527,6 +533,10 @@ namespace Jc.ApiHelper
                         if (action.InputParameters[i].HasDefaultValue)
                         {
                             string? defaultValue = action.InputParameters[i].DefaultValue == null ? "null" : action.InputParameters[i].DefaultValue!.ToString();
+                            if (defaultValue == "False")
+                            {
+                                defaultValue = "false";
+                            }
                             inputParamStr += $" = {defaultValue}";
                         }
                         ajaxParamStr += $"                {{\"{action.InputParameters[i].Name}\", {action.InputParameters[i].Name}}},";
