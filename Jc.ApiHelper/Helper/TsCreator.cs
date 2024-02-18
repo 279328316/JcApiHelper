@@ -771,7 +771,8 @@ namespace Jc.ApiHelper
             {
                 netTypeStr = GetNetType(ptype.TypeName);
             }
-            if (paramModel.IsNullable && !netTypeStr.EndsWith("?"))
+            if ((paramModel.IsNullable || paramModel.DefaultValue == null) 
+                    && !netTypeStr.EndsWith("?"))
             {
                 netTypeStr = $"{netTypeStr}?";
             }
