@@ -7,7 +7,7 @@ echo User Dir %USERPROFILE%   FileVersion : %version%
 set curDir="%USERPROFILE%\.nuget\packages\jc.apihelper\%version%\lib\netcoreapp3.0\"
 echo Target Dir : %curDir%
 Del "%curDir%\*" /q
-xcopy /Y "Jc.ApiHelper\bin\Debug\net6.0" %curDir%
+xcopy /Y "Jc.ApiHelper\bin\Debug\net8.0" %curDir%
 
 echo Copy Finished.
 pause 

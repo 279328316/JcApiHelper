@@ -144,6 +144,26 @@ namespace Jc.ApiHelper
         /// <summary>
         /// Ctor
         /// Attribute使用
+        /// 根据AttributeData
+        /// 构造CustomAttrModel
+        /// </summary>
+        private static CustomAttrModel GetCustomAttribute(Type customAttributeType, int index = 0)
+        {
+            PTypeModel ptype = GetPType(customAttributeType);
+            CustomAttrModel model = new CustomAttrModel()
+            {
+                Name = ptype.TypeName.Replace("Attribute", ""),
+                PType = ptype,
+                Position = index,
+                //ConstructorArgumentsList = customAttribute.ConstructorArguments.Select((a, i) => { return GetParam(a, i); }).ToList(),
+                //NamedArgumentsList = customAttribute.NamedArguments.Select((a, i) => { return GetParam(a, i); }).ToList()
+            };
+            return model;
+        }
+
+        /// <summary>
+        /// Ctor
+        /// Attribute使用
         /// 根据Attribute TypedArgument 构造方法参数
         /// 构造constructorArguments参数ParamModel
         /// </summary>

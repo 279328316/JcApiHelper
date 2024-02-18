@@ -82,13 +82,13 @@ namespace Jc.ApiHelper
                 #endregion
 
                 #region Controller,Action 排序
-                for (int i = 0; i < controllerList.Count; i++)
-                {
-                    controllerList[i].ActionList.Sort((a1, a2) =>
-                    {
-                        return a1.ActionName.CompareTo(a2.ActionName);
-                    });
-                }
+                //for (int i = 0; i < controllerList.Count; i++)
+                //{
+                //    controllerList[i].ActionList.Sort((a1, a2) =>
+                //    {
+                //        return a1.ActionName.CompareTo(a2.ActionName);
+                //    });
+                //}
                 controllerList.Sort((a1, a2) =>
                 {
                     return a1.ControllerName.CompareTo(a2.ControllerName);
@@ -129,7 +129,14 @@ namespace Jc.ApiHelper
             List<ParamModel> inputParams = actionDescriptor.Parameters.Select((a, index) =>
                                     GetParam(((ControllerParameterDescriptor)a).ParameterInfo)).ToList();
             ParamModel returnParam = GetParam(actionDescriptor.MethodInfo.ReturnParameter);
-
+            if (customAttrList.Any(a => a.Name == "NullableContext"))
+            {
+                if (!returnParam.IsNullable)
+                {
+                    Type attributeType = typeof(Nullable);
+                    returnParam.CustomAttrList.Add(GetCustomAttribute(attributeType));
+                }
+            }
             ActionModel action = new ActionModel()
             {
                 Id = TypeHelper.GetMethodModuleMark(actionDescriptor.MethodInfo),

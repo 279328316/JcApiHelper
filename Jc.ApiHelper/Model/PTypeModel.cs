@@ -44,19 +44,6 @@ namespace Jc.ApiHelper
         public bool IsGeneric { get { return SourceType.IsGenericType; } }
 
         /// <summary>
-        /// 是否可为空
-        /// </summary>
-        public bool IsNullable
-        {
-            get 
-            {
-                bool result = false;
-                result = SourceType.CustomAttributes.Any(a => a.AttributeType.Name.Contains("NullableAttribute"));
-                return result; 
-            }
-        }
-
-        /// <summary>
         /// 是否为值类型
         /// </summary>
         public bool IsValueType

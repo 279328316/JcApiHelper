@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
 	<Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>简单好用的.net开源ApiHelper
@@ -28,5 +28,10 @@ author:279328316@qq.com</PackageReleaseNotes>
   
   <ItemGroup>
     <EmbeddedResource Include="Html/**/*" Exclude="**/*/*.map;**/*/*.json;**/*/*.md" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Html\524.464c173e9fde5972025f.js" />
+    <None Remove="Html\runtime.85511c9788eb25e3ef10.js" />
   </ItemGroup>
 </Project>

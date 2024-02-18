@@ -24,9 +24,12 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <param name="pageSize">页大小</param>
         /// <param name="sort">排序字段</param>
         /// <param name="order">排序方向</param>
+        /// <param name="pid">TestStr Test
+        ///     Test回车换行测试
+        /// </param>
         /// <returns>robj</returns>
         [HttpPost]
-        public PageResult<GlobalsettingDto> QueryGlobalsettingList(int pageIndex = 1, int pageSize = 10,int? pid = 10, string? sort = null, string? order = null)
+        public PageResult<GlobalsettingDto> QueryGlobalsettingList(int pageIndex = 1, int pageSize = 10,int? pid = 10, string? sort = null, string? order = "asc", string testStr = "a")
         {
             IQuery<GlobalsettingDto> query = Dbc.GetIQuery<GlobalsettingDto>(Request.Form)
                 .AutoOrderBy(sort, order, a => a.Id, Sorting.Asc)
@@ -69,15 +72,19 @@ namespace Jc.ApiHelper.Mvc.Controllers
         {
             return null;
         }
-
         /// <summary>
         /// 获取记录
         /// </summary>
         /// <param name="id">id</param>
+        /// <param name="sort">sort1</param>
+        /// <param name="order">order1</param>
+        /// <param name="testStr">TestStr Test
+        ///     Test回车换行测试
+        /// </param>
         /// <returns>GlobalsettingDto</returns>
         [HttpPost]
         [AllowAnonymous]
-        public GlobalsettingDto? GetGlobalsetting(Guid? id)
+        public GlobalsettingDto? GetGlobalsetting(Guid? id,string? sort = null,string? order = "asc",string testStr = "a")
         {
             ExHelper.ThrowIf(id == Guid.Empty, "无效的查询参数");
             GlobalsettingDto? dto = Dbc.Db.GetById<GlobalsettingDto>(id);

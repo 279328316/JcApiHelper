@@ -64,7 +64,15 @@ namespace Jc.ApiHelper
         /// <summary>
         /// 是否可为空
         /// </summary>
-        public bool IsNullable { get { return PType.IsNullable; } }
+        public bool IsNullable
+        {
+            get
+            {
+                bool result = false;
+                result = CustomAttrList.Any(a => a.Name == "Nullable");
+                return result;
+            }
+        }
 
         /// <summary>
         /// 是否为值类型参数

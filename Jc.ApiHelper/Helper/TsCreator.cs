@@ -496,9 +496,11 @@ namespace Jc.ApiHelper
             string actionRouteName = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
                                         + $"{action.ControllerName}/{action.ActionName}";
             string inputParamName = "";
+            string inputParamSummary = "";
             string inputParamStr = "";
             string ajaxParamStr = "";
             string returnParamTypeStr = "";
+            string returnParamSummary = "";
             string requestType = "HttpContentType.Form";
             string needLogin = "true";
             List<ParamModel> inputParams = action.InputParameters;
@@ -512,6 +514,7 @@ namespace Jc.ApiHelper
                     ParamModel inputParam = inputParams[0];
                     inputParamStr = $"{GetNetType(inputParam)} {inputParam.Name}";
                     inputParamName = inputParam.Name;
+                    inputParamSummary = $"        /// <param name=\"{inputParam.Name}\">{ReplaceReturnStr(inputParam.Summary)}</param>\r\n";
                     if (inputParam.IsIEnumerable)
                     {   // 如果参数类型为可枚举类型,设置请求类型为Json格式
                         requestType = "HttpContentType.Json";
@@ -524,28 +527,31 @@ namespace Jc.ApiHelper
                     ajaxParamStr += "            {\r\n";
                     for (int i = 0; i < action.InputParameters.Count; i++)
                     {
+                        ParamModel param = action.InputParameters[i];
                         if (i > 0)
                         {
                             inputParamStr += ", ";
                             ajaxParamStr += "\r\n";
                         }
-                        inputParamStr += $"{GetNetType(action.InputParameters[i])} {action.InputParameters[i].Name}";
-                        if (action.InputParameters[i].HasDefaultValue)
+                        inputParamSummary = $"        /// <param name=\"{param.Name}\">{ReplaceReturnStr(param.Summary)}</param>\r\n";
+                        inputParamStr += $"{GetNetType(param)} {param.Name}";
+                        if (param.HasDefaultValue)
                         {
-                            string? defaultValue = action.InputParameters[i].DefaultValue == null ? "null" : action.InputParameters[i].DefaultValue!.ToString();
+                            string? defaultValue = param.DefaultValue == null ? "null" : param.DefaultValue!.ToString();
                             if (defaultValue == "False")
                             {
                                 defaultValue = "false";
                             }
                             inputParamStr += $" = {defaultValue}";
                         }
-                        ajaxParamStr += $"                {{\"{action.InputParameters[i].Name}\", {action.InputParameters[i].Name}}},";
+                        ajaxParamStr += $"                {{\"{param.Name}\", {action.InputParameters[i].Name}}},";
                     }
                     ajaxParamStr += "\r\n            };";
                     if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
                              && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
                     {   //处理分页查询方法                    
                         inputParamStr += $", Dictionary<string,object?>? queryParams = null";
+                        inputParamSummary = $"        /// <param name=\"queryParams\">自定义查询参数</param>\r\n";
                         ajaxParamStr += $"\r\n            if (queryParams != null)\r\n" +
                                         $"            {{\r\n" +
                                         $"                data = data.Concat(queryParams).ToDictionary(kv => kv.Key, kv => kv.Value);\r\n" +
@@ -560,7 +566,8 @@ namespace Jc.ApiHelper
             #endregion
 
             returnParamTypeStr = GetNetType(action.ReturnParameter);
-            if(action.CustomAttrList.Any(a=>a.Name == "AllowAnonymous"))
+            returnParamSummary = $"        /// <returns>{ReplaceReturnStr(action.ReturnParameter.Summary) ?? action.ReturnParameter.Name}</returns>\r\n";
+            if (action.CustomAttrList.Any(a=>a.Name == "AllowAnonymous"))
             {
                 needLogin = "false";
             }
@@ -596,6 +603,8 @@ namespace Jc.ApiHelper
                 $"        /// <summary>\r\n" +
                 $"{actionSummary}" +
                 $"        /// </summary>");
+            strBuilder.Append(inputParamSummary);
+            strBuilder.Append(returnParamSummary);
             strBuilder.AppendLine($"        public static {returnParamTypeStr} {action.ActionName}({inputParamStr})");
             strBuilder.AppendLine("        {");
             if (!string.IsNullOrWhiteSpace(ajaxParamStr))
@@ -606,6 +615,23 @@ namespace Jc.ApiHelper
             strBuilder.AppendLine($"            return result;");
             strBuilder.AppendLine("        }");
             return strBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 替换字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="replaceStr"></param>
+        /// <param name="newStr"></param>
+        /// <returns></returns>
+        private string? ReplaceReturnStr(string? str ,string replaceStr = "\n",string newStr = " ")
+        {
+            string? result = str;
+            if (!string.IsNullOrEmpty(result))
+            {
+                result = result.Replace(replaceStr, newStr);
+            }
+            return result;
         }
 
         #endregion
@@ -744,6 +770,10 @@ namespace Jc.ApiHelper
             else
             {
                 netTypeStr = GetNetType(ptype.TypeName);
+            }
+            if (paramModel.IsNullable && !netTypeStr.EndsWith("?"))
+            {
+                netTypeStr = $"{netTypeStr}?";
             }
             return netTypeStr;
         }
