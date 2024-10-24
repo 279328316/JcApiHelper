@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-
+﻿using Jc.ApiHelper.Mvc.Models;
 using Jc.Core;
-using Jc.ApiHelper.Mvc.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace Jc.ApiHelper.Mvc.Controllers
 {
@@ -52,13 +50,13 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// </summary>
         /// <returns>bool</returns>
         [HttpPost]
-        public bool SetUser([FromBody]UserDto dto)
+        public bool SetUser([FromBody] UserDto dto)
         {
             CheckUser(dto);//检查用户输入
             if (dto.Id != Guid.Empty)
             {
                 UserDto dbDto = Dbc.Db.GetById<UserDto>(dto.Id);
-                ExHelper.ThrowIfNull(dbDto,"查找更新记录失败.");
+                ExHelper.ThrowIfNull(dbDto, "查找更新记录失败.");
                 dbDto.CopyTo(dto, a => a.Id);
             }
             else
@@ -88,12 +86,12 @@ namespace Jc.ApiHelper.Mvc.Controllers
         {
             ExHelper.ThrowIf(id == Guid.Empty, "无效的记录Id");
             UserDto dto = Dbc.Db.GetById<UserDto>(id);
-            ExHelper.ThrowIfNull(dto,"查找记录失败.");
+            ExHelper.ThrowIfNull(dto, "查找记录失败.");
             dto.IsDelete = true;
-            Dbc.Db.Set(dto,a=>a.IsDelete);
+            Dbc.Db.Set(dto, a => a.IsDelete);
             return true;
         }
-        #endregion 
 
+        #endregion
     }
 }

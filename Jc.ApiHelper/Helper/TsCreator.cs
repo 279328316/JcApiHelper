@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Jc.ApiHelper
 {
@@ -18,10 +17,10 @@ namespace Jc.ApiHelper
         /// </summary>
         public TsResultModel GetTsResultModel(string itemId, string itemType = "")
         {
-            TsResultModel result = null;
-            if (itemType.ToLower() == TsCreateType.Controller.ToString().ToLower())
+            TsResultModel result = new TsResultModel();
+            if (itemType.Equals(TsCreateType.Controller.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                ControllerModel controller = JcApiHelper.GetController(itemId);
+                ControllerModel? controller = JcApiHelper.GetController(itemId);
                 if (controller == null)
                 {
                     throw new Exception("无效的ItemId.");
@@ -30,7 +29,7 @@ namespace Jc.ApiHelper
             }
             else if (itemType.ToLower() == TsCreateType.Action.ToString().ToLower())
             {
-                ActionModel action = JcApiHelper.GetAction(itemId);
+                ActionModel? action = JcApiHelper.GetAction(itemId);
                 if (action == null)
                 {
                     throw new Exception("无效的ItemId.");
@@ -62,28 +61,15 @@ namespace Jc.ApiHelper
             result.Name = (string.IsNullOrEmpty(controller.AreaName) ? "" : $"{controller.AreaName}/")
                                         + controller.ControllerName;
 
-            result.TsModelList = new List<TsModel>();
-            for (int i = 0; i < controller.ActionList.Count; i++)
-            {
-                ActionModel action = controller.ActionList[i];
-                #region 处理输入输出参数
-                if (action.InputParameters != null && action.InputParameters.Count > 0)
-                {
-                    for (int j = 0; j < action.InputParameters.Count; j++)
-                    {
-                        if (action.InputParameters[j].PType.PiList != null && action.InputParameters[j].PType.PiList.Count > 0)
-                        {
-                            FillTsModelList(result.TsModelList, action.InputParameters[j].PType);
-                        }
-                    }
-                }
-                if (action.ReturnParameter.PType.PiList != null && action.ReturnParameter.PType.PiList.Count > 0)
-                {
-                    FillTsModelList(result.TsModelList, action.ReturnParameter.PType);
-                }
-                #endregion
-            }
+            result.TsModelList = TsHelper.GetTsModels(controller);
             result.TsService = GetTsServiceModel(controller);
+
+            result.TsModelList.ForEach(model =>
+            {
+                model.TsModelCode = GetTsModelCode(model.Id);
+                model.PgQueryModelCode = GetTsQueryModelCode(model.Id);
+            });
+
             return result;
         }
 
@@ -99,27 +85,14 @@ namespace Jc.ApiHelper
             };
             result.Name = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
                             + $"{action.ControllerName}/{action.ActionName}";
-            result.TsModelList = new List<TsModel>();
-
-            #region 处理输入输出参数
-            if (action.InputParameters != null && action.InputParameters.Count > 0)
-            {
-                for (int i = 0; i < action.InputParameters.Count; i++)
-                {
-                    if (action.InputParameters[i].PType.PiList != null && action.InputParameters[i].PType.PiList.Count > 0)
-                    {
-                        FillTsModelList(result.TsModelList, action.InputParameters[i].PType);
-                    }
-                }
-            }
-            if (action.ReturnParameter.PType.PiList != null && action.ReturnParameter.PType.PiList.Count > 0)
-            {
-                FillTsModelList(result.TsModelList, action.ReturnParameter.PType);
-            }
-            #endregion
-
+            result.TsModelList = TsHelper.GetTsModels(action);
             result.TsService = GetTsServiceModel(action);
 
+            result.TsModelList.ForEach(model =>
+            {
+                model.TsModelCode = GetTsModelCode(model.Id);
+                model.PgQueryModelCode = GetTsQueryModelCode(model.Id);
+            });
             return result;
         }
 
@@ -134,61 +107,25 @@ namespace Jc.ApiHelper
                 Name = ptype.TypeName,
                 Summary = ptype.Summary
             };
-            result.TsModelList = new List<TsModel>();
-            FillTsModelList(result.TsModelList, ptype);
+            result.TsModelList = TsHelper.GetTsModels(ptype);
+
+            result.TsModelList.ForEach(model =>
+            {
+                model.TsModelCode = GetTsModelCode(model.Id);
+                model.PgQueryModelCode = GetTsQueryModelCode(model.Id);
+            });
             return result;
         }
 
         /// <summary>
-        /// 获取TsModelList
+        /// 生成TsCode
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="ptype"></param>
-        private void FillTsModelList(List<TsModel> list, PTypeModel ptype)
+        private string GetTsModelCode(string ptypeId)
         {
-            ptype = JcApiHelper.GetPTypeModel(ptype.Id);    //读取Ptype注释内容
-
-            if (list.Any(tsPtype => tsPtype.Id == ptype.Id))
-            {   //已添加过,不再添加
-                return;
-            }
-
-            if (ptype.IsIEnumerable)
-            {   //枚举类型 添加其泛型类型
-                PTypeModel enumItemPtype = JcApiHelper.GetPTypeModel(ptype.EnumItemId);    //读取Ptype注释内容
-                if (enumItemPtype?.PiList?.Count > 0)
-                {
-                    FillTsModelList(list, enumItemPtype);
-                }
-                return;
-            }
-
-            TsModel tsPType = new TsModel()
-            {
-                Id = ptype.Id,
-                Name = GetTsType(ptype),
-                Summary = ptype.Summary,
-                TsModelCode = GetTsModelCode(ptype),
-                PgQueryModelCode = GetTsQueryModelCode(ptype),
-                PiList = new List<TsPi>()
-            };
-            list.Add(tsPType);
-
-            for (int i = 0; i < ptype.PiList?.Count; i++)
-            {
-                TsPi tsPi = new TsPi()
-                {
-                    Name = ptype.PiList[i].Name,
-                    Summary = ptype.PiList[i].Summary,
-                    TsType = GetTsType(ptype.PiList[i].PType)
-                };
-                tsPType.PiList.Add(tsPi);
-
-                if (ptype.PiList[i].PType.PiList?.Count > 0)
-                {
-                    FillTsModelList(list, ptype.PiList[i].PType);
-                }
-            }
+            string code = string.Empty;
+            PTypeModel pType = JcApiHelper.GetPTypeModel(ptypeId);
+            code = GetTsModelCode(pType);
+            return code;
         }
 
         /// <summary>
@@ -197,12 +134,12 @@ namespace Jc.ApiHelper
         private string GetTsModelCode(PTypeModel ptype)
         {
             StringBuilder strBuilder = new StringBuilder();
-            string tsType = GetTsType(ptype);
+            string tsType = TsHelper.GetTsType(ptype);
             strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary)}*/");
             strBuilder.AppendLine("export class " + tsType + " {");
             for (int i = 0; i < ptype.PiList.Count; i++)
             {
-                strBuilder.AppendLine($"  { FirstToLower(ptype.PiList[i].Name)}: {GetTsType(ptype.PiList[i].PType)};   // " + ptype.PiList[i].Summary);
+                strBuilder.AppendLine($"  {FirstToLower(ptype.PiList[i].Name)}: {TsHelper.GetTsType(ptype.PiList[i].PType)};   // " + ptype.PiList[i].Summary);
             }
             strBuilder.AppendLine("}");
             strBuilder.AppendLine();
@@ -210,18 +147,29 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
+        /// 生成TsCode
+        /// </summary>
+        private string GetTsQueryModelCode(string ptypeId)
+        {
+            string code = string.Empty;
+            PTypeModel pType = JcApiHelper.GetPTypeModel(ptypeId);
+            code = GetTsQueryModelCode(pType);
+            return code;
+        }
+
+        /// <summary>
         /// 获取TsQueryModel
         /// </summary>
         private string GetTsQueryModelCode(PTypeModel ptype)
         {
-            if(ptype.IsEnum || ptype.IsGeneric)
+            if (ptype.IsEnum || ptype.IsGeneric)
             {   //排除枚举和泛型类型
                 return "";
             }
-            string tsType = GetTsType(ptype);
+            string tsType = TsHelper.GetTsType(ptype);
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary)} QueryObj 分页查询对象*/");
-            strBuilder.AppendLine($"export class { tsType }QueryObj extends { tsType } implements IPage {{");
+            strBuilder.AppendLine($"export class {tsType}QueryObj extends {tsType} implements IPage {{");
             strBuilder.AppendLine("  pageIndex: number;");
             strBuilder.AppendLine("  pageSize: number;");
             strBuilder.AppendLine("  sort: string;");
@@ -233,7 +181,6 @@ namespace Jc.ApiHelper
             strBuilder.AppendLine();
             return strBuilder.ToString();
         }
-
 
         /// <summary>
         /// 生成TsService
@@ -292,7 +239,7 @@ namespace Jc.ApiHelper
             codeBuilder.AppendLine("using Jc;");
             codeBuilder.AppendLine();
 
-            codeBuilder.AppendLine($"namespace {controller.ModuleName.Replace(".dll","")}.ApiHelper");
+            codeBuilder.AppendLine($"namespace {controller.ModuleName.Replace(".dll", "")}.ApiHelper");
             codeBuilder.AppendLine("{");
 
             string controllerSummary = "";
@@ -378,10 +325,10 @@ namespace Jc.ApiHelper
             {
                 if (action.InputParameters.Count == 1 && action.InputParameters[0].HasPiList == true)
                 {
-                    inputParamStr = $"{action.InputParameters[0].Name}:{GetTsType(action.InputParameters[0].PType)}";
+                    inputParamStr = $"{action.InputParameters[0].Name}:{TsHelper.GetTsType(action.InputParameters[0].PType)}";
                     ajaxParamStr = $",{action.InputParameters[0].Name}";
                 }
-                else if (action.InputParameters.Any(param=>param.Name.ToLower().Contains("index"))
+                else if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
                          && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
                 {   //处理分页查询方法
                     string queryObjTypeName = "PgQueryObj";
@@ -392,7 +339,7 @@ namespace Jc.ApiHelper
                             if (action.ReturnParameter.PType.PiList[i].IsIEnumerable)
                             {
                                 PTypeModel enumPType = JcApiHelper.GetPTypeModel(action.ReturnParameter.PType.PiList[i].EnumItemId);
-                                queryObjTypeName = GetTsType(enumPType) + "QueryObj";
+                                queryObjTypeName = TsHelper.GetTsType(enumPType) + "QueryObj";
                                 break;
                             }
                         }
@@ -410,16 +357,16 @@ namespace Jc.ApiHelper
                             inputParamStr += ",";
                             ajaxParamStr += ",";
                         }
-                        inputParamStr += $"{action.InputParameters[i].Name}: {GetTsType(action.InputParameters[i].PType)}";
+                        inputParamStr += $"{action.InputParameters[i].Name}: {TsHelper.GetTsType(action.InputParameters[i].PType)}";
                         ajaxParamStr += $"{action.InputParameters[i].Name}: {action.InputParameters[i].Name}";
                     }
                     ajaxParamStr += "}";
                 }
             }
-            returnParamTypeStr = GetTsType(action.ReturnParameter.PType);
+            returnParamTypeStr = TsHelper.GetTsType(action.ReturnParameter.PType);
 
             strBuilder.AppendLine($"  /*{(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}*/");
-            strBuilder.AppendLine($"  public { FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
+            strBuilder.AppendLine($"  public {FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
             strBuilder.AppendLine($"    return Util.ajax('{actionRouteName}'{ajaxParamStr});");
             strBuilder.AppendLine("  }");
             return strBuilder.ToString();
@@ -440,7 +387,7 @@ namespace Jc.ApiHelper
             {
                 if (action.InputParameters.Count == 1 && action.InputParameters[0].HasPiList == true)
                 {
-                    inputParamStr = $"{action.InputParameters[0].Name}:{GetTsType(action.InputParameters[0].PType)}";
+                    inputParamStr = $"{action.InputParameters[0].Name}:{TsHelper.GetTsType(action.InputParameters[0].PType)}";
                     ajaxParamStr = $",{action.InputParameters[0].Name}";
                 }
                 else if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
@@ -454,7 +401,7 @@ namespace Jc.ApiHelper
                             if (action.ReturnParameter.PType.PiList[i].IsIEnumerable)
                             {
                                 PTypeModel enumPType = JcApiHelper.GetPTypeModel(action.ReturnParameter.PType.PiList[i].EnumItemId);
-                                queryObjTypeName = GetTsType(enumPType) + "QueryObj";
+                                queryObjTypeName = TsHelper.GetTsType(enumPType) + "QueryObj";
                                 break;
                             }
                         }
@@ -472,16 +419,16 @@ namespace Jc.ApiHelper
                             inputParamStr += ",";
                             ajaxParamStr += ",";
                         }
-                        inputParamStr += $"{action.InputParameters[i].Name}: {GetTsType(action.InputParameters[i].PType)}";
+                        inputParamStr += $"{action.InputParameters[i].Name}: {TsHelper.GetTsType(action.InputParameters[i].PType)}";
                         ajaxParamStr += $"{action.InputParameters[i].Name}: {action.InputParameters[i].Name}";
                     }
                     ajaxParamStr += "}";
                 }
             }
-            returnParamTypeStr = GetTsType(action.ReturnParameter.PType);
+            returnParamTypeStr = TsHelper.GetTsType(action.ReturnParameter.PType);
 
             strBuilder.AppendLine($"  /*{(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}*/");
-            strBuilder.AppendLine($"  public { FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
+            strBuilder.AppendLine($"  public {FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
             strBuilder.AppendLine($"    return this.http.post('{actionRouteName}'{ajaxParamStr});");
             strBuilder.AppendLine("  }");
             return strBuilder.ToString();
@@ -549,7 +496,7 @@ namespace Jc.ApiHelper
                     ajaxParamStr += "\r\n            };";
                     if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
                              && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
-                    {   //处理分页查询方法                    
+                    {   //处理分页查询方法
                         inputParamStr += $", Dictionary<string,object?>? queryParams = null";
                         inputParamSummary += $"        /// <param name=\"queryParams\">自定义查询参数</param>\r\n";
                         ajaxParamStr += $"\r\n            if (queryParams != null)\r\n" +
@@ -567,7 +514,7 @@ namespace Jc.ApiHelper
 
             returnParamTypeStr = GetNetType(action.ReturnParameter);
             returnParamSummary = $"        /// <returns>{ReplaceReturnStr(action.ReturnParameter.Summary) ?? action.ReturnParameter.Name}</returns>\r\n";
-            if (action.CustomAttrList.Any(a=>a.Name == "AllowAnonymous"))
+            if (action.CustomAttrList.Any(a => a.Name == "AllowAnonymous"))
             {
                 needLogin = "false";
             }
@@ -624,7 +571,7 @@ namespace Jc.ApiHelper
         /// <param name="replaceStr"></param>
         /// <param name="newStr"></param>
         /// <returns></returns>
-        private string? ReplaceReturnStr(string? str ,string replaceStr = "\n",string newStr = " ")
+        private string? ReplaceReturnStr(string? str, string replaceStr = "\n", string newStr = " ")
         {
             string? result = str;
             if (!string.IsNullOrEmpty(result))
@@ -650,98 +597,6 @@ namespace Jc.ApiHelper
             }
             return str;
         }
-
-        /// <summary>
-        /// c#中的数据类型与TsType对照
-        /// </summary>
-        /// <param name="ptype"></param>
-        /// <returns></returns>
-        private string GetTsType(PTypeModel ptype)
-        {
-            if (ptype == null)
-            {
-                return "";
-            }
-            string tsTypeStr = "";
-            Type type = ptype.SourceType;
-
-            if (type == typeof(Microsoft.AspNetCore.Mvc.IActionResult))
-            {
-                tsTypeStr = "any";
-            }
-            else if (ptype.IsIEnumerable)
-            {   //列表类型特殊处理
-                PTypeModel enumPType = JcApiHelper.GetPTypeModel(ptype.EnumItemId);
-                tsTypeStr = $"{GetTsType(enumPType)}[]";
-            }
-            else
-            {
-                tsTypeStr = GetTsType(ptype.TypeName);
-            }
-            return tsTypeStr;
-        }
-
-        /// <summary>
-        /// c#中的数据类型与TsType对照
-        /// </summary>
-        /// <param name="typeName">类型名称</param>
-        /// <returns></returns>
-        private string GetTsType(string typeName)
-        {
-            string tsTypeStr = "";
-
-            List<string> numberTypeList =
-                ("int,int?,int16,int16?,int32,int32?,int64,int64?,decimal,decimal?," +
-                "double,double?,byte,byte?,long,long?,single,single?").Split(',').ToList();
-            
-            List<string> boolTypeList = ("bool,bool?,boolean,boolean?").Split(',').ToList();
-            List<string> stringTypeList =
-                ("string,guid,guid?").Split(',').ToList();
-            List<string> dateTimeTypeList =
-                ("datetime,datetime?").Split(',').ToList();
-
-            if (boolTypeList.Contains(typeName.ToLower()))
-            {
-                tsTypeStr = "boolean";
-            }
-            else if (stringTypeList.Contains(typeName.ToLower()))
-            {
-                tsTypeStr = "string";
-            }
-            else if (dateTimeTypeList.Contains(typeName.ToLower()))
-            {
-                tsTypeStr = "Date";
-            }
-            else if (numberTypeList.Contains(typeName.ToLower()))
-            {
-                tsTypeStr = "number";
-            }
-            else
-            {
-                tsTypeStr = typeName;
-                #region 去掉Dto,Model命名
-                if (tsTypeStr.EndsWith("Dto"))
-                {   //参数类型名称 去掉末尾Dto,Model命名
-                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Dto"));
-                }
-                else if (tsTypeStr.EndsWith("Dto>"))
-                {
-                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Dto")) + ">";
-                }
-                else if (tsTypeStr.EndsWith("Model"))
-                {
-                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Model"));
-                }
-                else if (tsTypeStr.EndsWith("Model>"))
-                {
-                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Model")) + ">";
-                }
-                #endregion
-            }
-            return tsTypeStr;
-        }
-
-
 
         /// <summary>
         /// c#中的数据类型
@@ -771,7 +626,7 @@ namespace Jc.ApiHelper
             {
                 netTypeStr = GetNetType(ptype.TypeName);
             }
-            if ((paramModel.IsNullable || paramModel.DefaultValue == null) 
+            if ((paramModel.IsNullable || paramModel.DefaultValue == null)
                     && !netTypeStr.EndsWith("?"))
             {
                 netTypeStr = $"{netTypeStr}?";

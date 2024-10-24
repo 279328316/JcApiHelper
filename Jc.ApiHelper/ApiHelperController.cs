@@ -1,19 +1,11 @@
-﻿using System;
+﻿using Jc.ApiHelper.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Jc.ApiHelper;
-using Jc.ApiHelper.Model;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 
 namespace Jc.ApiHelper
 {
@@ -23,7 +15,7 @@ namespace Jc.ApiHelper
     [Route("[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class ApiHelperController:ControllerBase
+    public class ApiHelperController : ControllerBase
     {
         /// <summary>
         /// Ctor
@@ -58,12 +50,12 @@ namespace Jc.ApiHelper
             Robj<string?> robj = new Robj<string?>();
             List<Assembly> assemblyList = AppDomain.CurrentDomain.GetAssemblies().ToList();
             AppDomain currentDomain = AppDomain.CurrentDomain;
-            Assembly? assembly = assemblyList.FirstOrDefault(a=>a.GetName().Name==currentDomain.FriendlyName);
+            Assembly? assembly = assemblyList.FirstOrDefault(a => a.GetName().Name == currentDomain.FriendlyName);
             if (assembly != null)
             {
-                //AssemblyFileVersionAttribute fileVersionAttr = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
-                AssemblyInformationalVersionAttribute? versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-                robj.Result = versionAttr?.InformationalVersion;
+                AssemblyFileVersionAttribute? fileVersionAttr = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
+                // AssemblyInformationalVersionAttribute? versionAttr = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                robj.Result = fileVersionAttr?.Version;
             }
             return new JsonResult(robj);
         }
@@ -90,7 +82,6 @@ namespace Jc.ApiHelper
             return new JsonResult(robj);
         }
 
-
         /// <summary>
         /// 获取所有Controller
         /// </summary>
@@ -98,7 +89,7 @@ namespace Jc.ApiHelper
         [HttpPost]
         [AllowAnonymous]
         [Route("[action]")]
-        public IActionResult GetControllerListByIds([FromBody]List<string> ids)
+        public IActionResult GetControllerListByIds([FromBody] List<string> ids)
         {
             Robj<List<ControllerModel>> robj = new Robj<List<ControllerModel>>();
             try
@@ -130,7 +121,7 @@ namespace Jc.ApiHelper
         [HttpPost]
         [AllowAnonymous]
         [Route("[action]")]
-        public IActionResult GetController([FromForm]string controllerId)
+        public IActionResult GetController([FromForm] string controllerId)
         {
             Robj<ControllerModel?> robj = new Robj<ControllerModel?>();
             try
@@ -157,7 +148,7 @@ namespace Jc.ApiHelper
         [HttpPost]
         [AllowAnonymous]
         [Route("[action]")]
-        public IActionResult GetAction([FromForm]string actionId)
+        public IActionResult GetAction([FromForm] string actionId)
         {
             Robj<ActionModel?> robj = new Robj<ActionModel?>();
             try
@@ -184,7 +175,7 @@ namespace Jc.ApiHelper
         [HttpPost]
         [AllowAnonymous]
         [Route("[action]")]
-        public IActionResult GetPType([FromForm]string typeId)
+        public IActionResult GetPType([FromForm] string typeId)
         {
             Robj<PTypeModel> robj = new Robj<PTypeModel>();
             try
@@ -212,7 +203,7 @@ namespace Jc.ApiHelper
         [HttpPost]
         [AllowAnonymous]
         [Route("[action]")]
-        public IActionResult GetTsModel([FromForm]string itemId, [FromForm]string itemType)
+        public IActionResult GetTsModel([FromForm] string itemId, [FromForm] string itemType)
         {
             Robj<TsResultModel> robj = new Robj<TsResultModel>();
             try
@@ -235,6 +226,37 @@ namespace Jc.ApiHelper
             }
             return new JsonResult(robj);
         }
-    }
 
+        /// <summary>
+        /// 生成Item对应ZTreeNode
+        /// </summary>
+        /// <param name="controllerId">Controller Id</param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("[action]")]
+        public IActionResult GetCodeTree([FromForm] string controllerId)
+        {
+            Robj<CodeTreeModel> robj = new Robj<CodeTreeModel>();
+            try
+            {
+                if (string.IsNullOrEmpty(controllerId))
+                {
+                    throw new Exception("参数controllerId不能为空");
+                }
+                ControllerModel? controller = JcApiHelper.GetController(controllerId);
+                if (controller == null)
+                {
+                    throw new Exception("无效的controllerId");
+                }
+                CodeGenerator creator = new CodeGenerator(controller);
+                CodeTreeModel codeTree = creator.GetCodeTree();
+            }
+            catch (Exception ex)
+            {
+                robj.Error(ex.Message);
+            }
+            return new JsonResult(robj);
+        }
+    }
 }

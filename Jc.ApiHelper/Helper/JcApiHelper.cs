@@ -6,14 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace Jc.ApiHelper
 {
     /// <summary>
-    /// JcApiHelper
-    /// 使用前请调用Init方法进行初始化
+    /// JcApiHelper 使用前请调用Init方法进行初始化
     /// </summary>
     public static partial class JcApiHelper
     {
@@ -25,6 +22,11 @@ namespace Jc.ApiHelper
         /// </summary>
         private static Dictionary<string, PTypeModel> PTypeDic { get; set; } = new Dictionary<string, PTypeModel>();
 
+        /// <summary>
+        /// 注释NoteDic
+        /// </summary>
+        private static Dictionary<string, AssemblyNoteModel> AssemblyNoteDic { get; set; } = new Dictionary<string, AssemblyNoteModel>();
+
         #endregion
 
         #region Methods
@@ -32,13 +34,12 @@ namespace Jc.ApiHelper
         #region Init Methods
 
         /// <summary>
-        /// 初始化Helper
-        /// 参数actionProvider.在Controller构造方法中注入IActionDescriptorCollectionProvider
+        /// 初始化Helper 参数actionProvider.在Controller构造方法中注入IActionDescriptorCollectionProvider
         /// </summary>
         /// <param name="actionProvider"></param>
         public static void Init(IActionDescriptorCollectionProvider actionProvider)
         {
-            if (controllerList.Count<=0)
+            if (controllerList.Count <= 0)
             {
                 InitController(actionProvider);
             }
@@ -152,7 +153,7 @@ namespace Jc.ApiHelper
             };
             return action;
         }
-        
+
         #endregion
 
         #region 公开方法
@@ -183,30 +184,10 @@ namespace Jc.ApiHelper
         /// </summary>
         private static void InitAllControllerNote()
         {
-            List<AssemblyNoteModel> noteList = new List<AssemblyNoteModel>();
-
-            #region 处理AssemblyNote
-            List<string> moduleList = controllerList.Select(controller => controller.ModuleName).Distinct().ToList();
-
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
-            for (int i = 0; i < moduleList.Count; i++)
-            {
-                string xmlNoteFileName = moduleList[i].Replace(".dll", ".xml");
-
-                FileInfo fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
-                if (fileInfo != null)
-                {
-                    AssemblyNoteModel noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
-                    noteList.Add(noteModel);
-                }
-            }
-            #endregion
-
             for (int i = 0; i < controllerList.Count; i++)
             {
                 ControllerModel controller = controllerList[i];
-                AssemblyNoteModel? noteModel = noteList.FirstOrDefault(note => note.ModuleName == controller.ModuleName);
+                AssemblyNoteModel? noteModel = GetAssemblyNote(controller);
                 if (noteModel == null)
                 {
                     continue;
@@ -240,7 +221,7 @@ namespace Jc.ApiHelper
         /// <returns></returns>
         public static ControllerModel? GetController(string controllerId)
         {
-            ControllerModel? controller = controllerList.FirstOrDefault(a=>a.Id== controllerId);
+            ControllerModel? controller = controllerList.FirstOrDefault(a => a.Id == controllerId);
             if (controller != null)
             {
                 SetControllerNote(controller);
@@ -254,38 +235,66 @@ namespace Jc.ApiHelper
         /// <param name="controller"></param>
         private static void SetControllerNote(ControllerModel controller)
         {
-            #region 设置Controller注释
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
-            string xmlNoteFileName = controller.ModuleName.Replace(".dll", ".xml");
-
-            FileInfo? fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
-            if (fileInfo != null)
+            if (controller.NoteModel != null)
             {
-                AssemblyNoteModel? noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
-                if (noteModel != null)
-                {   //Controller 注释
-                    controller.NoteModel = noteModel.MemberList.FirstOrDefault(member => member.Name == controller.Id);
-                    foreach (ActionModel action in controller.ActionList)
-                    {   //Action注释
-                        action.NoteModel = noteModel.MemberList.FirstOrDefault(member => member.Name == action.Id);
+                return;
+            }
 
-                        if (action.NoteModel != null)
-                        {
-                            foreach (ParamModel param in action.InputParameters)
-                            {   //输入参数注释
-                                if (action.NoteModel.ParamList.Keys.Contains(param.Name))
-                                {
-                                    param.Summary = action.NoteModel.ParamList[param.Name];
-                                }
+            #region 设置Controller注释
+            AssemblyNoteModel? noteModel = GetAssemblyNote(controller);
+            if (noteModel != null)
+            {
+                //Controller 注释
+                controller.NoteModel = noteModel.MemberList.FirstOrDefault(member => member.Name == controller.Id);
+                foreach (ActionModel action in controller.ActionList)
+                {   //Action注释
+                    action.NoteModel = noteModel.MemberList.FirstOrDefault(member => member.Name == action.Id);
+
+                    if (action.NoteModel != null)
+                    {
+                        foreach (ParamModel param in action.InputParameters)
+                        {   //输入参数注释
+                            if (action.NoteModel.ParamList.Keys.Contains(param.Name))
+                            {
+                                param.Summary = action.NoteModel.ParamList[param.Name];
                             }
-                            //返回参数注释
-                            action.ReturnParameter.Summary = action.NoteModel.Returns;
                         }
+                        //返回参数注释
+                        action.ReturnParameter.Summary = action.NoteModel.Returns;
                     }
                 }
             }
             #endregion
+        }
+
+        /// <summary>
+        /// 获取AssemblyNote
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        private static AssemblyNoteModel? GetAssemblyNote(ControllerModel controller)
+        {
+            AssemblyNoteModel? noteModel = null;
+            string xmlNoteFileName = controller.ModuleName.Replace(".dll", ".xml");
+            if (AssemblyNoteDic.ContainsKey(xmlNoteFileName))
+            {
+                noteModel = AssemblyNoteDic[xmlNoteFileName];
+                return noteModel;
+            }
+
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
+
+            FileInfo? fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
+            if (fileInfo != null)
+            {
+                noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
+                if (noteModel != null)
+                {
+                    AssemblyNoteDic.TryAdd(xmlNoteFileName, noteModel);
+                }
+            }
+            return noteModel;
         }
 
         /// <summary>
@@ -320,7 +329,8 @@ namespace Jc.ApiHelper
                 SetPTypeNote(sourcePType);
 
                 //new 新对象,因为属性列表需要过滤 IsJsonIgnore != true
-                ptype = new PTypeModel() {
+                ptype = new PTypeModel()
+                {
                     Id = sourcePType.Id,
                     TypeName = sourcePType.TypeName,
                     Summary = sourcePType.Summary,
@@ -370,8 +380,9 @@ namespace Jc.ApiHelper
         {
             return PTypeDic;
         }
+
         #endregion
-        
+
         #endregion
     }
 }

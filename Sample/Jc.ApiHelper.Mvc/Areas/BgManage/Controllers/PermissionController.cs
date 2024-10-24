@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-
+﻿using Jc.ApiHelper.Mvc.Models;
 using Jc.Core;
-using Jc.ApiHelper.Mvc.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace Jc.ApiHelper.Mvc.Controllers
 {
@@ -25,7 +23,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         /// <param name="order">排序方向</param>
         /// <returns>robj</returns>
         [HttpPost]
-        public PageResult<PermissionDto> QueryPermissionList(int pageIndex = 1, int pageSize = 10,int? pid = 10, string? sort = null, string? order = null)
+        public PageResult<PermissionDto> QueryPermissionList(int pageIndex = 1, int pageSize = 10, int? pid = 10, string? sort = null, string? order = null)
         {
             IQuery<PermissionDto> query = Dbc.Db.IQuery<PermissionDto>(Request.Form)
                 .AutoOrderBy(sort, order, a => a.Id, Sorting.Asc)
@@ -48,8 +46,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
         }
 
         /// <summary>
-        /// 获取记录
-        /// 非空参数验证
+        /// 获取记录 非空参数验证
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>PermissionDto</returns>
@@ -72,7 +69,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             if (dto.Id != Guid.Empty)
             {
                 PermissionDto? dbDto = Dbc.Db.GetById<PermissionDto>(dto.Id);
-                ExHelper.ThrowIfNull(dbDto,"查找更新记录失败.");
+                ExHelper.ThrowIfNull(dbDto, "查找更新记录失败.");
                 dbDto.CopyTo(dto, a => a.Id);
             }
             Dbc.Db.Set(dto);
@@ -100,7 +97,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             Dbc.Db.DeleteById<PermissionDto>(id);
             return true;
         }
-        #endregion 
 
+        #endregion
     }
 }

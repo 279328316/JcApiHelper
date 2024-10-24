@@ -28,8 +28,8 @@ namespace Jc.ApiHelper
             if (type.GenericTypeArguments?.Length > 0)
             {
                 //Nullable`1
-                typeName = typeName.Substring(0,typeName.IndexOf("`"));
-                if(typeName== "Nullable")
+                typeName = typeName.Substring(0, typeName.IndexOf("`"));
+                if (typeName == "Nullable")
                 {
                     typeName = type.GenericTypeArguments[0].Name + "?";
                 }
@@ -103,7 +103,6 @@ namespace Jc.ApiHelper
             return moduleMark;
         }
 
-
         /// <summary>
         /// 获取参数类型名称
         /// </summary>
@@ -115,7 +114,7 @@ namespace Jc.ApiHelper
             if (type.GenericTypeArguments?.Length > 0)
             {
                 //Nullable`1
-                typeName = typeName.Substring(0, typeName.IndexOf("`"));              
+                typeName = typeName.Substring(0, typeName.IndexOf("`"));
                 typeName += "{";
                 for (int i = 0; i < type.GenericTypeArguments.Length; i++)
                 {
@@ -129,6 +128,101 @@ namespace Jc.ApiHelper
             }
             return typeName;
         }
+
+        /// <summary>
+        /// c#中的数据类型与TsType对照
+        /// </summary>
+        /// <param name="ptype"></param>
+        /// <returns></returns>
+        public static string GetTsType(PTypeModel ptype)
+        {
+            if (ptype == null)
+            {
+                return "";
+            }
+            string tsTypeStr = "";
+            Type type = ptype.SourceType;
+
+            if (type == typeof(Microsoft.AspNetCore.Mvc.IActionResult))
+            {
+                tsTypeStr = "any";
+            }
+            else if (ptype.IsIEnumerable)
+            {   //列表类型特殊处理
+                PTypeModel enumPType = JcApiHelper.GetPTypeModel(ptype.EnumItemId);
+                tsTypeStr = $"{GetTsType(enumPType)}[]";
+            }
+            else
+            {
+                tsTypeStr = GetTsType(ptype.TypeName);
+            }
+            return tsTypeStr;
+        }
+
+        /// <summary>
+        /// c#中的数据类型与TsType对照
+        /// </summary>
+        /// <param name="typeName">类型名称</param>
+        /// <returns></returns>
+        public static string GetTsType(string typeName)
+        {
+            string tsTypeStr = "";
+
+            List<string> numberTypeList =
+                ("int,int?,int16,int16?,int32,int32?,int64,int64?,decimal,decimal?," +
+                "double,double?,byte,byte?,long,long?,single,single?").Split(',').ToList();
+
+            List<string> boolTypeList = ("bool,bool?,boolean,boolean?").Split(',').ToList();
+            List<string> stringTypeList =
+                ("string,guid,guid?").Split(',').ToList();
+            List<string> dateTimeTypeList =
+                ("datetime,datetime?").Split(',').ToList();
+
+            if (boolTypeList.Contains(typeName.ToLower()))
+            {
+                tsTypeStr = "boolean";
+            }
+            else if (stringTypeList.Contains(typeName.ToLower()))
+            {
+                tsTypeStr = "string";
+            }
+            else if (dateTimeTypeList.Contains(typeName.ToLower()))
+            {
+                tsTypeStr = "Date";
+            }
+            else if (numberTypeList.Contains(typeName.ToLower()))
+            {
+                tsTypeStr = "number";
+            }
+            else
+            {
+                tsTypeStr = typeName;
+                #region 去掉Dto,Model命名
+                if (tsTypeStr.StartsWith("Vw"))
+                {   //参数类型名称 去掉开始Vw命名
+                    tsTypeStr = tsTypeStr.Substring(2);
+                }
+                if (tsTypeStr.EndsWith("Dto"))
+                {   //参数类型名称 去掉末尾Dto,Model命名
+                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Dto"));
+                }
+                else if (tsTypeStr.EndsWith("Dto>"))
+                {
+                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Dto")) + ">";
+                }
+                else if (tsTypeStr.EndsWith("Model"))
+                {
+                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Model"));
+                }
+                else if (tsTypeStr.EndsWith("Model>"))
+                {
+                    tsTypeStr = tsTypeStr.Substring(0, tsTypeStr.LastIndexOf("Model")) + ">";
+                }
+                #endregion
+            }
+            return tsTypeStr;
+        }
+
         #endregion
     }
 }

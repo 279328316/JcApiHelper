@@ -1,17 +1,17 @@
-﻿using System.Reflection;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.StaticFiles;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Jc.ApiHelper
 {
@@ -21,9 +21,12 @@ namespace Jc.ApiHelper
     internal class JcApiHelperUIMiddleware
     {
         private const string embeddedFileNamespace = "Jc.ApiHelper.Html";
+
         private readonly StaticFileMiddleware staticFileMiddleware;
-        private static Assembly apiHelperAssembly = null;
-        private static List<string> apiResources = null;
+
+        private static Assembly? apiHelperAssembly = null;
+
+        private static List<string> apiResources = new List<string>();
 
         /// <summary>
         /// Ctor
@@ -31,11 +34,11 @@ namespace Jc.ApiHelper
         /// <param name="next">A function that can process an HTTP request</param>
         /// <param name="hostingEnv">运行环境</param>
         /// <param name="loggerFactory">logger</param>
-        public JcApiHelperUIMiddleware(RequestDelegate next,IWebHostEnvironment hostingEnv,ILoggerFactory loggerFactory)
+        public JcApiHelperUIMiddleware(RequestDelegate next, IWebHostEnvironment hostingEnv, ILoggerFactory loggerFactory)
         {
             apiHelperAssembly = typeof(JcApiHelperUIMiddleware).GetTypeInfo().Assembly;
             apiResources = apiHelperAssembly.GetManifestResourceNames().ToList();
-            
+
             StaticFileOptions staticFileOptions = new StaticFileOptions
             {
                 RequestPath = "/ApiHelper",
@@ -54,7 +57,7 @@ namespace Jc.ApiHelper
         public async Task Invoke(HttpContext httpContext)
         {
             string httpMethod = httpContext.Request.Method;
-            string path = httpContext.Request.Path.Value.ToLower();
+            string path = httpContext.Request.Path.Value!.ToLower();
 
             if (httpMethod == "GET" && Regex.IsMatch(path, $"/apihelper/"))
             {
@@ -87,7 +90,7 @@ namespace Jc.ApiHelper
             response.StatusCode = 200;
             response.ContentType = "text/html;charset=utf-8";
 
-            using (Stream stream = apiHelperAssembly.GetManifestResourceStream($"{embeddedFileNamespace}.index.html"))
+            using (Stream stream = apiHelperAssembly?.GetManifestResourceStream($"{embeddedFileNamespace}.index.html")!)
             {
                 // Inject arguments before writing to response
                 StringBuilder htmlBuilder = new StringBuilder(new StreamReader(stream).ReadToEnd());
@@ -95,6 +98,7 @@ namespace Jc.ApiHelper
                 //处理index.html baseUrl 以兼容非根目录以及Nginx代理转发情况
                 htmlBuilder.Replace("<base id=\"base\" href=\"/\">", $"<base id=\"base\" href=\"/ApiHelper/\">");
                 await response.WriteAsync(htmlBuilder.ToString(), Encoding.UTF8);
+                stream.Close();
             }
         }
     }

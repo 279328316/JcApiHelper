@@ -1,18 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Jc.ApiHelper
 {
     /// <summary>
-    /// JcApiHelper
-    /// 使用前请调用Init方法进行初始化
+    /// JcApiHelper 使用前请调用Init方法进行初始化
     /// </summary>
     public static partial class JcApiHelper
     {
@@ -31,7 +25,7 @@ namespace Jc.ApiHelper
             //去掉枚举value__属性
             List<FieldInfo> fieldList = memberList
                 .Where(a => a.MemberType == MemberTypes.Field)
-                .Where(a => a.Name!= "value__")
+                .Where(a => a.Name != "value__")
                 .Select(a => a as FieldInfo).ToList();
 
             if (fieldList?.Count > 0)
@@ -44,7 +38,7 @@ namespace Jc.ApiHelper
             }
             return list;
         }
-        
+
         /// <summary>
         /// 获取类对象属性列表
         /// </summary>
@@ -102,30 +96,24 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// Attribute使用
-        /// 根据AttributeData
-        /// 构造CustomAttrModel
+        /// Ctor Attribute使用 根据AttributeData 构造CustomAttrModel
         /// </summary>
         private static CustomAttrModel GetCustomAttribute(CustomAttributeData customAttribute, int index = 0)
         {
             PTypeModel ptype = GetPType(customAttribute.AttributeType);
             CustomAttrModel model = new CustomAttrModel()
             {
-                Name = ptype.TypeName.Replace("Attribute",""),
+                Name = ptype.TypeName.Replace("Attribute", ""),
                 PType = ptype,
                 Position = index,
-                ConstructorArgumentsList = customAttribute.ConstructorArguments.Select((a,i)=> { return GetParam(a, i); }).ToList(),
+                ConstructorArgumentsList = customAttribute.ConstructorArguments.Select((a, i) => { return GetParam(a, i); }).ToList(),
                 NamedArgumentsList = customAttribute.NamedArguments.Select((a, i) => { return GetParam(a, i); }).ToList()
             };
             return model;
         }
 
         /// <summary>
-        /// Ctor
-        /// Attribute使用
-        /// 根据AttributeData
-        /// 构造CustomAttrModel
+        /// Ctor Attribute使用 根据AttributeData 构造CustomAttrModel
         /// </summary>
         private static CustomAttrModel GetCustomAttribute(Attribute customAttribute, int index = 0)
         {
@@ -142,10 +130,7 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// Attribute使用
-        /// 根据AttributeData
-        /// 构造CustomAttrModel
+        /// Ctor Attribute使用 根据AttributeData 构造CustomAttrModel
         /// </summary>
         private static CustomAttrModel GetCustomAttribute(Type customAttributeType, int index = 0)
         {
@@ -162,10 +147,7 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// Attribute使用
-        /// 根据Attribute TypedArgument 构造方法参数
-        /// 构造constructorArguments参数ParamModel
+        /// Ctor Attribute使用 根据Attribute TypedArgument 构造方法参数 构造constructorArguments参数ParamModel
         /// </summary>
         /// <param name="typedArgument"></param>
         /// <param name="index">序号</param>
@@ -183,10 +165,7 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// Attribute使用
-        /// 根据Attribute NamedArgument 命名参数
-        /// 构造命名参数ParamModel
+        /// Ctor Attribute使用 根据Attribute NamedArgument 命名参数 构造命名参数ParamModel
         /// </summary>
         /// <param name="namedArgument"></param>
         /// <param name="index">序号</param>
@@ -204,9 +183,7 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// 根据参数信息 输入输出参数
-        /// 构造ParamModel
+        /// Ctor 根据参数信息 输入输出参数 构造ParamModel
         /// </summary>
         /// <param name="paramInfo">参数信息</param>
         private static ParamModel GetParam(ParameterInfo paramInfo)
@@ -225,13 +202,11 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// 根据数据类型 自定义参数名
-        /// 构造ParamModel
+        /// Ctor 根据数据类型 自定义参数名 构造ParamModel
         /// </summary>
         /// <param name="type">类型</param>
         /// <param name="index">序号</param>
-        private static ParamModel GetParam(Type type,int index = 0)
+        private static ParamModel GetParam(Type type, int index = 0)
         {
             PTypeModel ptype = GetPType(type);
             ParamModel param = new ParamModel()
@@ -244,9 +219,7 @@ namespace Jc.ApiHelper
         }
 
         /// <summary>
-        /// Ctor
-        /// 枚举属性使用
-        /// 性构造ParamModel
+        /// Ctor 枚举属性使用 性构造ParamModel
         /// </summary>
         /// <param name="fi">FieldInfo</param>
         /// <param name="index"></param>
@@ -283,15 +256,12 @@ namespace Jc.ApiHelper
 
             if (fi.CustomAttributes.Count() > 0)
             {
-
             }
             return param;
         }
 
         /// <summary>
-        /// Ctor
-        /// 类属性使用
-        /// 构造ParamModel
+        /// Ctor 类属性使用 构造ParamModel
         /// </summary>
         /// <param name="pi">参数信息</param>
         /// <param name="index"></param>
@@ -299,7 +269,7 @@ namespace Jc.ApiHelper
         {
             PTypeModel ptype = GetPType(pi.PropertyType);
 
-            string piId = null;
+            string piId = string.Empty;
             if (pi.DeclaringType != null)
             {
                 string declaringTypeName = pi.DeclaringType.ToString();
@@ -318,9 +288,8 @@ namespace Jc.ApiHelper
                 CustomAttrList = pi.CustomAttributes.Select(a => GetCustomAttribute(a)).ToList(),
                 Position = index + 1
             };
-            if(pi.CustomAttributes.Count()>0)
+            if (pi.CustomAttributes.Count() > 0)
             {
-
             }
             return param;
         }
@@ -348,7 +317,7 @@ namespace Jc.ApiHelper
                     {
                         ptype.PiList = GetEnumPiList(type);
                     }
-                    else if(ptype.IsIEnumerable)
+                    else if (ptype.IsIEnumerable)
                     {   //实现了枚举方法 使用子类属性
                         if (!IsIgnoreType(type.GenericTypeArguments[0]))
                         {
@@ -379,10 +348,10 @@ namespace Jc.ApiHelper
                 typeName = typeName.Replace("[]", "");  //获取数组 元类型
 
                 //基类为ValueType的值类型 或Type,*Attribute
-                result = type.BaseType?.Name == "ValueType" 
-                            || typeName == "Type" 
+                result = type.BaseType?.Name == "ValueType"
+                            || typeName == "Type"
                             || typeName.EndsWith("Attribute");
-                
+
                 if (!result)
                 {   //排除 系统基本类型
                     result = Enum.IsDefined(typeof(TypeCode), typeName);
@@ -394,8 +363,6 @@ namespace Jc.ApiHelper
             return result;
         }
 
-
         #endregion
-
     }
 }

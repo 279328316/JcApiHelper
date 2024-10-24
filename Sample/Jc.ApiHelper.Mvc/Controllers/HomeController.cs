@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Jc.ApiHelper.Mvc.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Jc.ApiHelper.Mvc.Models;
 
 namespace Jc.ApiHelper.Mvc.Controllers
 {
@@ -31,15 +28,15 @@ namespace Jc.ApiHelper.Mvc.Controllers
             return View();
         }
 
-
         /// <summary>
         /// Test Method
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string,string> ATest()
+        public Dictionary<string, string> ATest()
         {
             return null;
         }
+
         /// <summary>
         /// Error
         /// </summary>

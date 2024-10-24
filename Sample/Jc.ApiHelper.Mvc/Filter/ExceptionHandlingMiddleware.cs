@@ -1,11 +1,7 @@
-﻿
-using Jc.Core;
-using Jc.Core.Helper;
+﻿using Jc.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Jc.ApiHelper.Mvc
@@ -57,7 +53,7 @@ namespace Jc.ApiHelper.Mvc
             {
                 int statusCode = context.Response.StatusCode;
                 string msg = "";
-                switch(statusCode)
+                switch (statusCode)
                 {
                     case 401:
                         msg = "未授权";

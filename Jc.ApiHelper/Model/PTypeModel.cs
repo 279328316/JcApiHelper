@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.AccessControl;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Jc.ApiHelper
 {
@@ -17,8 +12,7 @@ namespace Jc.ApiHelper
         #region Properties
 
         /// <summary>
-        /// 模块路径 类型:全路径 命名空间+所在类+属性名
-        /// 例如:P:Jc.ApiHelper.Controllers.PTypeModel.Id
+        /// 模块路径 类型:全路径 命名空间+所在类+属性名 例如:P:Jc.ApiHelper.Controllers.PTypeModel.Id
         /// </summary>
         public string Id { get; set; } = string.Empty;
 
@@ -32,7 +26,7 @@ namespace Jc.ApiHelper
         /// </summary>
         [JsonIgnore]
         public string? TypeFullName { get { return SourceType.FullName; } }
-        
+
         /// <summary>
         /// 是否为枚举类型
         /// </summary>
@@ -47,13 +41,13 @@ namespace Jc.ApiHelper
         /// 是否为值类型
         /// </summary>
         public bool IsValueType
-        { 
-            get 
+        {
+            get
             {
                 bool result = false;
                 result = SourceType.IsValueType;
-                return result; 
-            } 
+                return result;
+            }
         }
 
         /// <summary>
@@ -124,7 +118,7 @@ namespace Jc.ApiHelper
                 EnumItemName = TypeHelper.GetTypeName(type.GenericTypeArguments[0]);
             }
         }
+
         #endregion
     }
-
 }

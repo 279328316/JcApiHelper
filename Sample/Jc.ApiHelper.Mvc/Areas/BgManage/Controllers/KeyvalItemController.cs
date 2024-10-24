@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-
+﻿using Jc.ApiHelper.Mvc.Models;
 using Jc.Core;
-using Jc.ApiHelper.Mvc.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace Jc.ApiHelper.Mvc.Controllers
 {
@@ -58,7 +56,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             if (dto.Id != Guid.Empty)
             {
                 KeyvalItemDto dbDto = Dbc.Db.GetById<KeyvalItemDto>(dto.Id);
-                ExHelper.ThrowIfNull(dbDto,"查找更新记录失败.");
+                ExHelper.ThrowIfNull(dbDto, "查找更新记录失败.");
                 dbDto.CopyTo(dto, a => a.Id);
             }
             Dbc.Db.Set(dto);
@@ -86,7 +84,7 @@ namespace Jc.ApiHelper.Mvc.Controllers
             Dbc.Db.DeleteById<KeyvalItemDto>(id);
             return true;
         }
-        #endregion 
 
+        #endregion
     }
 }

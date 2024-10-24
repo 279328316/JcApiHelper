@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jc.ApiHelper
 {
     /// <summary>
-    /// JcApiHelperUIExpand
-    /// 扩展IApplicationBuilder
-    /// 使用JcApiHelperUI
+    /// JcApiHelperUIExpand 扩展IApplicationBuilder 使用JcApiHelperUI
     /// </summary>
     public static class JcApiHelperUIExpand
     {

@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Data;
-using System.Text.RegularExpressions;
-
-using System.Reflection;
-using System.Collections.Specialized;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Jc.Core.Helper;
-using Microsoft.AspNetCore.Http;
+﻿using Jc.ApiHelper.Mvc.Models;
 using Jc.Core;
-using Microsoft.AspNetCore.Mvc.Controllers;
+using Jc.Core.Helper;
 using Microsoft.AspNetCore.Authorization;
-using Jc.ApiHelper.Mvc.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+using System.Data;
+using System.Linq;
 
 namespace Jc.ApiHelper.Mvc
 {
@@ -30,7 +23,8 @@ namespace Jc.ApiHelper.Mvc
         /// <summary>
         /// 缓存Helper
         /// </summary>
-        public static ICacheHelper CacheHelper { get { return cacheHelper; } }
+        public static ICacheHelper CacheHelper
+        { get { return cacheHelper; } }
 
         /// <summary>
         /// 当前用户
@@ -117,6 +111,5 @@ namespace Jc.ApiHelper.Mvc
             }
             return user;
         }
-
     }
 }

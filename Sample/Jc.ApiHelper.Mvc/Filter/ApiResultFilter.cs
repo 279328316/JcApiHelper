@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using Jc.Core;
-using Jc.Core.Helper;
+﻿using Jc.Core;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Jc.ApiHelper.Mvc
