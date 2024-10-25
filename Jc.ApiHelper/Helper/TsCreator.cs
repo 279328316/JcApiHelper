@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Jc.ApiHelper
 {
@@ -62,13 +64,12 @@ namespace Jc.ApiHelper
                                         + controller.ControllerName;
 
             result.TsModelList = TsHelper.GetTsModels(controller);
-            result.TsService = GetTsServiceModel(controller);
-
-            result.TsModelList.ForEach(model =>
+            result.TsCode = new TsCodeModel()
             {
-                model.TsModelCode = GetTsModelCode(model.Id);
-                model.PgQueryModelCode = GetTsQueryModelCode(model.Id);
-            });
+                TsModelCode = GetTsModelCode(result.TsModelList),
+                TsServiceCode = GetTsServiceCode(controller),
+                ApiCode = GetControllerApiCode(controller),
+            };
 
             return result;
         }
@@ -86,13 +87,12 @@ namespace Jc.ApiHelper
             result.Name = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
                             + $"{action.ControllerName}/{action.ActionName}";
             result.TsModelList = TsHelper.GetTsModels(action);
-            result.TsService = GetTsServiceModel(action);
-
-            result.TsModelList.ForEach(model =>
+            result.TsCode = new TsCodeModel()
             {
-                model.TsModelCode = GetTsModelCode(model.Id);
-                model.PgQueryModelCode = GetTsQueryModelCode(model.Id);
-            });
+                TsModelCode = GetTsModelCode(result.TsModelList),
+                TsServiceCode = GetTsServiceCode(action),
+                ApiCode = GetClientApiCode(action),
+            };
             return result;
         }
 
@@ -109,12 +109,26 @@ namespace Jc.ApiHelper
             };
             result.TsModelList = TsHelper.GetTsModels(ptype);
 
-            result.TsModelList.ForEach(model =>
+            result.TsCode = new TsCodeModel()
             {
-                model.TsModelCode = GetTsModelCode(model.Id);
-                model.PgQueryModelCode = GetTsQueryModelCode(model.Id);
-            });
+                TsModelCode = GetTsModelCode(ptype)
+            };
             return result;
+        }
+
+        /// <summary>
+        /// 生成TsCode
+        /// </summary>
+        private string GetTsModelCode(List<TsModel> tsModels)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (TsModel tsModel in tsModels)
+            {
+                string modelTsCode = GetTsModelCode(tsModel.Id);
+                stringBuilder.AppendLine(modelTsCode);
+            }
+            string code = stringBuilder.ToString();
+            return code;
         }
 
         /// <summary>
@@ -135,14 +149,14 @@ namespace Jc.ApiHelper
         {
             StringBuilder strBuilder = new StringBuilder();
             string tsType = TsHelper.GetTsType(ptype);
-            strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary)}*/");
+            strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary.TrimStart())}*/");
             strBuilder.AppendLine("export class " + tsType + " {");
             for (int i = 0; i < ptype.PiList.Count; i++)
             {
                 strBuilder.AppendLine($"  {FirstToLower(ptype.PiList[i].Name)}: {TsHelper.GetTsType(ptype.PiList[i].PType)};   // " + ptype.PiList[i].Summary);
             }
             strBuilder.AppendLine("}");
-            strBuilder.AppendLine();
+            strBuilder.AppendLine(GetTsQueryModelCode(ptype));
             return strBuilder.ToString();
         }
 
@@ -168,6 +182,7 @@ namespace Jc.ApiHelper
             }
             string tsType = TsHelper.GetTsType(ptype);
             StringBuilder strBuilder = new StringBuilder();
+            strBuilder.AppendLine();
             strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary)} QueryObj 分页查询对象*/");
             strBuilder.AppendLine($"export class {tsType}QueryObj extends {tsType} implements IPage {{");
             strBuilder.AppendLine("  pageIndex: number;");
@@ -178,51 +193,35 @@ namespace Jc.ApiHelper
             strBuilder.AppendLine("    super();");
             strBuilder.AppendLine("  }");
             strBuilder.AppendLine("}");
-            strBuilder.AppendLine();
             return strBuilder.ToString();
         }
 
         /// <summary>
-        /// 生成TsService
+        /// 生成 Ts Service Code
         /// </summary>
-        private TsServiceModel GetTsServiceModel(ControllerModel controller)
+        private string GetTsServiceCode(ControllerModel controller)
         {
-            TsServiceModel tsService = new TsServiceModel();
-            StringBuilder jcCodeBuilder = new StringBuilder();
-            StringBuilder commonCodeBuilder = new StringBuilder();
+            StringBuilder tsCodeBuilder = new StringBuilder();
             StringBuilder headerCodeBuilder = new StringBuilder();
             headerCodeBuilder.AppendLine("import {Injectable} from '@angular/core';");
             headerCodeBuilder.AppendLine("import {Observable} from 'rxjs/Observable';");
             headerCodeBuilder.AppendLine();
 
-            jcCodeBuilder.AppendLine("import {Util} from '@core/util'");
-            jcCodeBuilder.AppendLine();
-            jcCodeBuilder.AppendLine("@Injectable()");
-            jcCodeBuilder.AppendLine($"export class {controller.ControllerName}Service {{");
-            jcCodeBuilder.AppendLine();
-
-            commonCodeBuilder.AppendLine("import {HttpClient} from '@angular/common/http';");
-            commonCodeBuilder.AppendLine();
-            commonCodeBuilder.AppendLine("@Injectable()");
-            commonCodeBuilder.AppendLine($"export class {controller.ControllerName} {{");
-            commonCodeBuilder.AppendLine();
-            commonCodeBuilder.AppendLine("  constructor(private http: HttpClient) {");
-            commonCodeBuilder.AppendLine("  }");
-            commonCodeBuilder.AppendLine();
+            tsCodeBuilder.AppendLine("import {Util} from '@core/util'");
+            tsCodeBuilder.AppendLine();
+            tsCodeBuilder.AppendLine("@Injectable()");
+            tsCodeBuilder.AppendLine($"export class {controller.ControllerName}Service {{");
+            tsCodeBuilder.AppendLine();
 
             for (int i = 0; i < controller.ActionList.Count; i++)
             {
                 ActionModel action = controller.ActionList[i];
-                jcCodeBuilder.AppendLine(GetTsServiceJcCode(action));
-                commonCodeBuilder.AppendLine(GetTsServiceCommonCode(action));
+                tsCodeBuilder.AppendLine(GetTsServiceCode(action));
             }
-            jcCodeBuilder.AppendLine("}");
-            commonCodeBuilder.AppendLine("}");
+            tsCodeBuilder.AppendLine("}");
 
-            tsService.JcCode = headerCodeBuilder.ToString() + jcCodeBuilder.ToString();
-            tsService.CommonCode = headerCodeBuilder.ToString() + commonCodeBuilder.ToString();
-            tsService.ApiCode = GetControllerApiCode(controller);
-            return tsService;
+            string serviceCode = headerCodeBuilder.ToString() + tsCodeBuilder.ToString();
+            return serviceCode;
         }
 
         /// <summary>
@@ -272,7 +271,7 @@ namespace Jc.ApiHelper
             }
             else
             {
-                controllerSummary = $"    /// {controller.ControllerName} ApiHelper\r\n";
+                controllerSummary = $"/// {controller.ControllerName} ApiHelper\r\n";
             }
             #endregion
 
@@ -296,24 +295,11 @@ namespace Jc.ApiHelper
         }
 
         #region 获取Ts Service CodeModel
-        /// <summary>
-        /// 生成TsService
-        /// </summary>
-        private TsServiceModel GetTsServiceModel(ActionModel action)
-        {
-            TsServiceModel tsService = new TsServiceModel()
-            {
-                JcCode = GetTsServiceJcCode(action),
-                CommonCode = GetTsServiceCommonCode(action),
-                ApiCode = GetClientApiCode(action),
-            };
-            return tsService;
-        }
 
         /// <summary>
         /// 生成TsService
         /// </summary>
-        private string GetTsServiceJcCode(ActionModel action)
+        private string GetTsServiceCode(ActionModel action)
         {
             StringBuilder strBuilder = new StringBuilder();
             string actionRouteName = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
@@ -368,68 +354,6 @@ namespace Jc.ApiHelper
             strBuilder.AppendLine($"  /*{(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}*/");
             strBuilder.AppendLine($"  public {FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
             strBuilder.AppendLine($"    return Util.ajax('{actionRouteName}'{ajaxParamStr});");
-            strBuilder.AppendLine("  }");
-            return strBuilder.ToString();
-        }
-
-        /// <summary>
-        /// 生成TsService
-        /// </summary>
-        private string GetTsServiceCommonCode(ActionModel action)
-        {
-            StringBuilder strBuilder = new StringBuilder();
-            string actionRouteName = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
-                                        + $"{action.ControllerName}/{action.ActionName}";
-            string inputParamStr = "";
-            string ajaxParamStr = "";
-            string returnParamTypeStr = "";
-            if (action.InputParameters != null && action.InputParameters.Count > 0)
-            {
-                if (action.InputParameters.Count == 1 && action.InputParameters[0].HasPiList == true)
-                {
-                    inputParamStr = $"{action.InputParameters[0].Name}:{TsHelper.GetTsType(action.InputParameters[0].PType)}";
-                    ajaxParamStr = $",{action.InputParameters[0].Name}";
-                }
-                else if (action.InputParameters.Any(param => param.Name.ToLower().Contains("index"))
-                         && action.InputParameters.Any(param => param.Name.ToLower().Contains("size")))
-                {   //处理分页查询方法
-                    string queryObjTypeName = "PgQueryObj";
-                    if (action.ReturnParameter.PType.PiList?.Count > 0)
-                    {
-                        for (int i = 0; i < action.ReturnParameter.PType.PiList.Count; i++)
-                        {
-                            if (action.ReturnParameter.PType.PiList[i].IsIEnumerable)
-                            {
-                                PTypeModel enumPType = JcApiHelper.GetPTypeModel(action.ReturnParameter.PType.PiList[i].EnumItemId);
-                                queryObjTypeName = TsHelper.GetTsType(enumPType) + "QueryObj";
-                                break;
-                            }
-                        }
-                    }
-                    inputParamStr = $"{FirstToLower(queryObjTypeName)}: {queryObjTypeName}";
-                    ajaxParamStr = $",{FirstToLower(queryObjTypeName)}";
-                }
-                else
-                {
-                    ajaxParamStr = ",{";
-                    for (int i = 0; i < action.InputParameters.Count; i++)
-                    {
-                        if (i > 0)
-                        {
-                            inputParamStr += ",";
-                            ajaxParamStr += ",";
-                        }
-                        inputParamStr += $"{action.InputParameters[i].Name}: {TsHelper.GetTsType(action.InputParameters[i].PType)}";
-                        ajaxParamStr += $"{action.InputParameters[i].Name}: {action.InputParameters[i].Name}";
-                    }
-                    ajaxParamStr += "}";
-                }
-            }
-            returnParamTypeStr = TsHelper.GetTsType(action.ReturnParameter.PType);
-
-            strBuilder.AppendLine($"  /*{(string.IsNullOrEmpty(action.Summary) ? action.ActionName : action.Summary)}*/");
-            strBuilder.AppendLine($"  public {FirstToLower(action.ActionName)}({inputParamStr}): Observable<{returnParamTypeStr}>{{");
-            strBuilder.AppendLine($"    return this.http.post('{actionRouteName}'{ajaxParamStr});");
             strBuilder.AppendLine("  }");
             return strBuilder.ToString();
         }

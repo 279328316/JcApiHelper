@@ -226,37 +226,5 @@ namespace Jc.ApiHelper
             }
             return new JsonResult(robj);
         }
-
-        /// <summary>
-        /// 生成Item对应ZTreeNode
-        /// </summary>
-        /// <param name="controllerId">Controller Id</param>
-        /// <returns></returns>
-        [HttpPost]
-        [AllowAnonymous]
-        [Route("[action]")]
-        public IActionResult GetCodeTree([FromForm] string controllerId)
-        {
-            Robj<CodeTreeModel> robj = new Robj<CodeTreeModel>();
-            try
-            {
-                if (string.IsNullOrEmpty(controllerId))
-                {
-                    throw new Exception("参数controllerId不能为空");
-                }
-                ControllerModel? controller = JcApiHelper.GetController(controllerId);
-                if (controller == null)
-                {
-                    throw new Exception("无效的controllerId");
-                }
-                CodeGenerator creator = new CodeGenerator(controller);
-                CodeTreeModel codeTree = creator.GetCodeTree();
-            }
-            catch (Exception ex)
-            {
-                robj.Error(ex.Message);
-            }
-            return new JsonResult(robj);
-        }
     }
 }

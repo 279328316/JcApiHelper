@@ -69,6 +69,9 @@ namespace Jc.ApiHelper
                 FillTsModelList(list, action.ReturnParameter.PType);
             }
             #endregion
+
+            // 按照名称和
+            list = list.OrderBy(a => a.Name).ThenBy(a => a.PiList.Count).ToList();
             return list;
         }
 

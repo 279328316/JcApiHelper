@@ -16,10 +16,12 @@ namespace Jc.ApiHelper
         /// Controller
         /// </summary>
         Controller = 1,
+
         /// <summary>
         /// Action
         /// </summary>
         Action = 2,
+
         /// <summary>
         /// PType
         /// </summary>
@@ -31,17 +33,13 @@ namespace Jc.ApiHelper
     /// </summary>
     public class TsResultModel
     {
-        #region Properties
-
         /// <summary>
-        /// 结果对象Id
-        /// ControllerId,ActionId,PTypeId
+        /// 结果对象Id ControllerId,ActionId,PTypeId
         /// </summary>
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// 结果对象名
-        /// ControllerName,ActionName,PTypeName
+        /// 结果对象名 ControllerName,ActionName,PTypeName
         /// </summary>
         public string Name { get; set; } = string.Empty;
 
@@ -51,25 +49,14 @@ namespace Jc.ApiHelper
         public string? Summary { get; set; } = string.Empty;
 
         /// <summary>
-        /// 类属性列表
+        /// Model List
         /// </summary>
-        public List<TsModel> TsModelList { get; set; }
+        public List<TsModel>? TsModelList { get; set; }
 
         /// <summary>
-        /// TsService
+        /// TsCode
         /// </summary>
-        public TsServiceModel TsService { get; set; }
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public TsResultModel()
-        {
-        }
-        #endregion
+        public TsCodeModel? TsCode { get; set; }
     }
 
     /// <summary>
@@ -77,8 +64,6 @@ namespace Jc.ApiHelper
     /// </summary>
     public class TsModel
     {
-        #region Properties
-
         /// <summary>
         /// PTypeId
         /// </summary>
@@ -98,28 +83,6 @@ namespace Jc.ApiHelper
         /// 类属性列表
         /// </summary>
         public List<TsPi> PiList { get; set; } = new List<TsPi>();
-
-        /// <summary>
-        /// Summary
-        /// </summary>
-        public string TsModelCode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Summary
-        /// </summary>
-        public string PgQueryModelCode { get; set; } = string.Empty;
-
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public TsModel()
-        {
-        }
-        #endregion
     }
 
     /// <summary>
@@ -144,19 +107,19 @@ namespace Jc.ApiHelper
     }
 
     /// <summary>
-    /// TsServiceModel
+    /// Ts Code Model 包含TsModel Code,Ts Service Code,ApiCode
     /// </summary>
-    public class TsServiceModel
+    public class TsCodeModel
     {
         /// <summary>
-        /// Jc Service Code
+        /// Ts Model Code
         /// </summary>
-        public string JcCode { get; set; } = string.Empty;
+        public string TsModelCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Common Service Code
+        /// Ts Service Code
         /// </summary>
-        public string CommonCode { get; set; } = string.Empty;
+        public string TsServiceCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Common C# Api Code
