@@ -104,6 +104,11 @@ namespace Jc.ApiHelper
         /// Summary
         /// </summary>
         public string Summary { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 属性类型是否为枚举类型
+        /// </summary>
+        public bool IsEnum { get; set; }
     }
 
     /// <summary>

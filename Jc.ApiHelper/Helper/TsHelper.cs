@@ -123,7 +123,8 @@ namespace Jc.ApiHelper
                 {
                     Name = ptype.PiList[i].Name,
                     Summary = ptype.PiList[i].Summary ?? string.Empty,
-                    TsType = TypeHelper.GetTsType(ptype.PiList[i].PType)
+                    TsType = TypeHelper.GetTsType(ptype.PiList[i].PType),
+                    IsEnum = ptype.PiList[i].PType.IsEnum
                 };
                 tsPType.PiList.Add(tsPi);
 
