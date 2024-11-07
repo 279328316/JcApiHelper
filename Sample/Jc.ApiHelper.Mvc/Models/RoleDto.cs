@@ -28,7 +28,7 @@ namespace Jc.ApiHelper.Mvc.Models
         /// <summary>
         /// 角色类型 0超级系统管理员 1系统管理员 2用户
         /// </summary>
-        public int? RoleType { get; set; }
+        public RoleType RoleType { get; set; }
 
         /// <summary>
         /// 序号

@@ -69,4 +69,18 @@ namespace Jc.ApiHelper.Mvc
         /// </summary>
         Taobao = 5
     }
+    /// <summary>
+    /// 用户状态
+    /// </summary>
+    public enum UserStatus
+    {
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disable = 0,
+        /// <summary>
+        /// 启用
+        /// </summary>
+        Active = 1
+    }
 }
