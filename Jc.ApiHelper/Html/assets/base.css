@@ -247,6 +247,13 @@ label{
 .maxw200{max-width:200px!important;}
 .maxw320{max-width:320px!important;}
 .maxwp100{max-width:100%!important;}
+.minw100{min-width: 100px!important;}
+.minw200{min-width: 200px!important;}
+.minw300{min-width: 300px!important;}
+.minw500{min-width: 500px!important;}
+.minw600{min-width: 600px!important;}
+.minw800{min-width: 800px!important;}
+.minw900{min-width: 900px!important;}
 
 .maxh150{max-height:150px!important;}
 .maxh200{max-height:150px!important;}
@@ -379,6 +386,8 @@ div.vhr{
 .color-greenFade{color:#2BFF2B!important;}
 .color-gray{color:#c7c7c7!important;}
 .color-lightgray{color:#e3e3e3!important;}
+.color-darkgray{color:#9d9b9b!important;}
+.color-extralgray{color:#595858!important;}
 
 .color-black{color:#373A3C!important;}
 

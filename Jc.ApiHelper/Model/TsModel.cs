@@ -70,9 +70,19 @@ namespace Jc.ApiHelper
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// 参数名
+        /// Model对象名称
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 来源对象名称
+        /// </summary>
+        public string SourceName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 是否为枚举类型
+        /// </summary>
+        public bool IsEnum { get; set; } = false;
 
         /// <summary>
         /// Summary

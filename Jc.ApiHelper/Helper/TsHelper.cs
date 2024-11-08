@@ -113,6 +113,8 @@ namespace Jc.ApiHelper
             {
                 Id = ptype.Id,
                 Name = TypeHelper.GetTsType(ptype),
+                SourceName = ptype.TypeName,
+                IsEnum = ptype.IsEnum,
                 Summary = ptype.Summary ?? string.Empty,
             };
             list.Add(tsPType);
