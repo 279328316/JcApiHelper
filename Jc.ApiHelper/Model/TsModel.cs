@@ -44,6 +44,11 @@ namespace Jc.ApiHelper
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// ControllerName 接口ControllerName
+        /// </summary>
+        public string ControllerName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 备注描述
         /// </summary>
         public string? Summary { get; set; } = string.Empty;

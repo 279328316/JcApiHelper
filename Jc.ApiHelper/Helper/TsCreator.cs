@@ -62,7 +62,7 @@ namespace Jc.ApiHelper
             };
             result.Name = (string.IsNullOrEmpty(controller.AreaName) ? "" : $"{controller.AreaName}/")
                                         + controller.ControllerName;
-
+            result.ControllerName = controller.ControllerName;
             result.TsModelList = TsHelper.GetTsModels(controller);
             result.TsCode = new TsCodeModel()
             {
@@ -86,6 +86,7 @@ namespace Jc.ApiHelper
             };
             result.Name = (string.IsNullOrEmpty(action.AreaName) ? "" : $"{action.AreaName}/")
                             + $"{action.ControllerName}/{action.ActionName}";
+            result.ControllerName = action.ControllerName;
             result.TsModelList = TsHelper.GetTsModels(action);
             result.TsCode = new TsCodeModel()
             {
@@ -105,6 +106,7 @@ namespace Jc.ApiHelper
             {
                 Id = ptype.Id,
                 Name = ptype.TypeName,
+                ControllerName = ptype.TypeName,
                 Summary = ptype.Summary
             };
             result.TsModelList = TsHelper.GetTsModels(ptype);
