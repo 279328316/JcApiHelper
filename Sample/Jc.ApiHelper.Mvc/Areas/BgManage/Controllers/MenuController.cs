@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
-using Jc.Core;
-using Jc.ApiHelper.Mvc.Models;
+using Jc.ApiHelper.Dto;
+using Jc.Database;
 
 namespace Jc.ApiHelper.Mvc.Controllers
 {

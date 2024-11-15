@@ -27,11 +27,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jc.Core" Version="1.1.2.5" />
+    <PackageReference Include="Jc.Cache" Version="1.2.1.9" />
+    <PackageReference Include="Jc.Core" Version="1.2.1.9" />
+    <PackageReference Include="Jc.Core.Database" Version="1.2.1.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Jc.ApiHelper\Jc.ApiHelper.csproj" />
+    <ProjectReference Include="..\Jc.ApiHelper.Dto\Jc.ApiHelper.Dto.csproj" />
+    <ProjectReference Include="..\Jc.ApiHelper.Model\Jc.ApiHelper.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

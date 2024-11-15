@@ -1,6 +1,5 @@
 ﻿
-using Jc.Core;
-using Jc.Core.Helper;
+using Jc.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

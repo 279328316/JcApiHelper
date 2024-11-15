@@ -1,4 +1,4 @@
-﻿using Jc.Core;
+﻿using Jc.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -1,6 +1,5 @@
 ﻿
-using Jc.Core;
-using Jc.Core.Helper;
+using Jc.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;

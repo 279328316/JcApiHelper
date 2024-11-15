@@ -1,5 +1,5 @@
-﻿using Jc.ApiHelper.Mvc.Models;
-using Jc.Core;
+﻿using Jc.ApiHelper.Dto;
+using Jc.Database;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using Jc.Core;
+﻿using Jc.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System;

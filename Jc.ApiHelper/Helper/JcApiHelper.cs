@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System;
@@ -187,7 +188,7 @@ namespace Jc.ApiHelper
             for (int i = 0; i < controllerList.Count; i++)
             {
                 ControllerModel controller = controllerList[i];
-                AssemblyNoteModel? noteModel = GetAssemblyNote(controller);
+                AssemblyNoteModel? noteModel = GetAssemblyNote(controller.ModuleName);
                 if (noteModel == null)
                 {
                     continue;
@@ -241,7 +242,7 @@ namespace Jc.ApiHelper
             }
 
             #region 设置Controller注释
-            AssemblyNoteModel? noteModel = GetAssemblyNote(controller);
+            AssemblyNoteModel? noteModel = GetAssemblyNote(controller.ModuleName);
             if (noteModel != null)
             {
                 //Controller 注释
@@ -265,36 +266,6 @@ namespace Jc.ApiHelper
                 }
             }
             #endregion
-        }
-
-        /// <summary>
-        /// 获取AssemblyNote
-        /// </summary>
-        /// <param name="controller"></param>
-        /// <returns></returns>
-        private static AssemblyNoteModel? GetAssemblyNote(ControllerModel controller)
-        {
-            AssemblyNoteModel? noteModel = null;
-            string xmlNoteFileName = controller.ModuleName.Replace(".dll", ".xml");
-            if (AssemblyNoteDic.ContainsKey(xmlNoteFileName))
-            {
-                noteModel = AssemblyNoteDic[xmlNoteFileName];
-                return noteModel;
-            }
-
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
-
-            FileInfo? fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
-            if (fileInfo != null)
-            {
-                noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
-                if (noteModel != null)
-                {
-                    AssemblyNoteDic.TryAdd(xmlNoteFileName, noteModel);
-                }
-            }
-            return noteModel;
         }
 
         /// <summary>
@@ -351,25 +322,81 @@ namespace Jc.ApiHelper
         private static void SetPTypeNote(PTypeModel ptype)
         {
             #region 设置PType注释
+            var memberNotes = GetAssemblyMemberList(ptype.SourceType);
+            if (memberNotes.Count > 0)
+            {
+                ptype.Summary = memberNotes.FirstOrDefault(member => member.Name == ptype.Id)?.Summary;
+                foreach (ParamModel param in ptype.PiList)
+                {
+                    param.Summary = memberNotes.FirstOrDefault(member => member.Name == param.Id)?.Summary;
+                }
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 根据Type获取关联的MemberNoteModel
+        /// </summary>
+        /// <returns></returns>
+        private static List<MemberNoteModel> GetAssemblyMemberList(Type sourceType)
+        {
+            List<AssemblyNoteModel> assemblyNotes = GetAssemblyNoteList(sourceType);
+            List<MemberNoteModel> memberNotes = new List<MemberNoteModel>();
+            foreach (AssemblyNoteModel assemblyNote in assemblyNotes)
+            {
+                memberNotes = memberNotes.Concat(assemblyNote.MemberList).ToList();
+            }
+            return memberNotes;
+        }
+
+        /// <summary>
+        /// 根据ModuleName获取AssemblyNoteModel
+        /// </summary>
+        /// <returns></returns>
+        private static List<AssemblyNoteModel> GetAssemblyNoteList(Type sourceType)
+        {
+            List<AssemblyNoteModel> assemblyNotes = new List<AssemblyNoteModel>();
+            Type? type = sourceType;
+            do
+            {
+                AssemblyNoteModel? assemblyNote = GetAssemblyNote(type.Module.Name);
+                if (assemblyNote != null)
+                {
+                    assemblyNotes.Add(assemblyNote);
+                }
+                type = type.BaseType;
+            } while (type != null && type != typeof(object));
+            return assemblyNotes;
+        }
+
+        /// <summary>
+        /// 根据ModuleName获取AssemblyNoteModel
+        /// </summary>
+        /// <param name="moduleName"></param>
+        /// <returns></returns>
+        private static AssemblyNoteModel? GetAssemblyNote(string moduleName)
+        {
+            AssemblyNoteModel? noteModel = null;
+            string xmlNoteFileName = moduleName.Replace(".dll", ".xml");
+            if (AssemblyNoteDic.ContainsKey(moduleName))
+            {
+                noteModel = AssemblyNoteDic[moduleName];
+                return noteModel;
+            }
+
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             DirectoryInfo dirInfo = new DirectoryInfo(baseDir);
-            string xmlNoteFileName = ptype.ModuleName.Replace(".dll", ".xml");
 
             FileInfo? fileInfo = dirInfo.GetFiles(xmlNoteFileName, SearchOption.AllDirectories).FirstOrDefault();
             if (fileInfo != null)
             {
-                AssemblyNoteModel? noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
+                noteModel = AssemblyHelper.GetAssemblyNote(fileInfo.FullName);
                 if (noteModel != null)
-                {   //Controller 注释
-                    ptype.Summary = noteModel.MemberList.FirstOrDefault(member => member.Name == ptype.Id)?.Summary;
-
-                    foreach (ParamModel param in ptype.PiList)
-                    {
-                        param.Summary = noteModel.MemberList.FirstOrDefault(member => member.Name == param.Id)?.Summary;
-                    }
+                {
+                    AssemblyNoteDic.TryAdd(moduleName, noteModel);
                 }
             }
-            #endregion
+            return noteModel;
         }
 
         /// <summary>

@@ -151,14 +151,31 @@ namespace Jc.ApiHelper
         {
             StringBuilder strBuilder = new StringBuilder();
             string tsType = TsHelper.GetTsType(ptype);
-            strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary.TrimStart())}*/");
-            strBuilder.AppendLine("export class " + tsType + " {");
-            for (int i = 0; i < ptype.PiList.Count; i++)
+            if (ptype.IsEnum)
             {
-                strBuilder.AppendLine($"  {FirstToLower(ptype.PiList[i].Name)}: {TsHelper.GetTsType(ptype.PiList[i].PType)};   // " + ptype.PiList[i].Summary);
+                strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary.TrimStart())}  ({ptype.TypeName})*/");
+                strBuilder.AppendLine("export enum " + tsType + " {");
+                for (int i = 0; i < ptype.PiList.Count; i++)
+                {
+                    ParamModel piParam = ptype.PiList[i];
+                    strBuilder.AppendLine($"  {FirstToLower(piParam.Name)} = {piParam.ParamValue},   // " + piParam.Summary);
+                }
+                strBuilder.AppendLine("}");
             }
-            strBuilder.AppendLine("}");
-            strBuilder.AppendLine(GetTsQueryModelCode(ptype));
+            else
+            {
+                strBuilder.AppendLine($"/*{(string.IsNullOrEmpty(ptype.Summary) ? tsType : ptype.Summary.TrimStart())}  ({ptype.TypeName})*/");
+                strBuilder.AppendLine("export class " + tsType + " {");
+                for (int i = 0; i < ptype.PiList.Count; i++)
+                {
+                    ParamModel piParam = ptype.PiList[i];
+                    strBuilder.AppendLine($"  {FirstToLower(piParam.Name)}: {TsHelper.GetTsType(piParam.PType)};   // " + piParam.Summary);
+                }
+                strBuilder.AppendLine("}");
+                strBuilder.AppendLine(GetTsQueryModelCode(ptype));
+            }
+
+                
             return strBuilder.ToString();
         }
 

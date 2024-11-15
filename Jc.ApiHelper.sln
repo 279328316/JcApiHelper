@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29021.104
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jc.ApiHelper.Api", "Sample\Jc.ApiHelper.Api\Jc.ApiHelper.Api.csproj", "{18522747-B330-419A-A3F0-1430C3E138BD}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jc.ApiHelper", "Jc.ApiHelper\Jc.ApiHelper.csproj", "{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.ApiHelper.Model", "Sample\Jc.ApiHelper.Model\Jc.ApiHelper.Model.csproj", "{0B17B6D2-3645-4975-9694-05F4C83EA104}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jc.ApiHelper.Dto", "Sample\Jc.ApiHelper.Dto\Jc.ApiHelper.Dto.csproj", "{47042EA4-5AFD-4316-BE08-F621F5171FBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,14 @@ Global
 		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12938C72-8C9D-44BE-BFB6-5A1BE56A4432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B17B6D2-3645-4975-9694-05F4C83EA104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B17B6D2-3645-4975-9694-05F4C83EA104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B17B6D2-3645-4975-9694-05F4C83EA104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B17B6D2-3645-4975-9694-05F4C83EA104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47042EA4-5AFD-4316-BE08-F621F5171FBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47042EA4-5AFD-4316-BE08-F621F5171FBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47042EA4-5AFD-4316-BE08-F621F5171FBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47042EA4-5AFD-4316-BE08-F621F5171FBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +48,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{18522747-B330-419A-A3F0-1430C3E138BD} = {EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}
 		{BDE2AA60-A9DA-43A2-867C-0201994F1715} = {EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}
+		{0B17B6D2-3645-4975-9694-05F4C83EA104} = {EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}
+		{47042EA4-5AFD-4316-BE08-F621F5171FBC} = {EDD4157D-87C9-4B39-BE9D-2DB980EBEFF2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {51D3A1EE-551B-4E69-8F3F-C11C41B9253F}

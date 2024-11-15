@@ -10,12 +10,12 @@ using System.Reflection;
 using System.Collections.Specialized;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Jc.Core.Helper;
 using Microsoft.AspNetCore.Http;
-using Jc.Core;
+using Jc.Database;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Authorization;
-using Jc.ApiHelper.Api.Models;
+using Jc.Cache;
+using Jc.ApiHelper.Dto;
 
 namespace Jc.ApiHelper.Api
 {
