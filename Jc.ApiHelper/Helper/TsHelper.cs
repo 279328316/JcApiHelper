@@ -177,7 +177,7 @@ namespace Jc.ApiHelper
         {
             if (ptype == null)
             {
-                return "";
+                return "any";
             }
             string tsTypeStr = "";
             Type type = ptype.SourceType;
@@ -205,8 +205,11 @@ namespace Jc.ApiHelper
         /// <returns></returns>
         public static string GetTsType(string typeName)
         {
+            if(typeName.ToLower() == "void")
+            {
+                return "any";
+            }
             string tsTypeStr = "";
-
             List<string> numberTypeList =
                 ("int,int?,int16,int16?,int32,int32?,int64,int64?,decimal,decimal?," +
                 "double,double?,byte,byte?,long,long?,single,single?").Split(',').ToList();

@@ -222,11 +222,11 @@ namespace Jc.ApiHelper
         {
             StringBuilder tsCodeBuilder = new StringBuilder();
             StringBuilder headerCodeBuilder = new StringBuilder();
-            headerCodeBuilder.AppendLine("import {Injectable} from '@angular/core';");
-            headerCodeBuilder.AppendLine("import {Observable} from 'rxjs';");
+            headerCodeBuilder.AppendLine("import { Injectable } from '@angular/core';");
+            headerCodeBuilder.AppendLine("import { Observable } from 'rxjs';");
             headerCodeBuilder.AppendLine();
 
-            tsCodeBuilder.AppendLine("import {Util} from '@core/util'");
+            tsCodeBuilder.AppendLine("import { Util } from '@core/util'");
             tsCodeBuilder.AppendLine();
             tsCodeBuilder.AppendLine("@Injectable()");
             tsCodeBuilder.AppendLine($"export class {controller.ControllerName}Service {{");
