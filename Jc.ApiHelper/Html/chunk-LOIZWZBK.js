@@ -574,9 +574,17 @@ export class @modelClassNameEditComponent implements OnInit {
     }
     let formValue = this.editForm.value;
     this.@modelName = { ...this.@modelName, ...formValue };
-    this.@modelNameSvc.set@modelClassName(this.@modelName).subscribe((res) => {
-      this.back();
-    });
+    if (!this.@modelNameId) {
+      this.@modelNameSvc.add@modelClassName(this.@modelName).subscribe((@modelName: @modelClassName) => {
+        // this.@modelNameId = @modelName.id;
+        // this.@modelName.id = @modelName.id;
+        this.back();
+      });
+    } else {
+      this.@modelNameSvc.update@modelClassName(this.@modelName).subscribe(() => {
+        this.back();
+      });
+    }
   }
 
   /**
@@ -899,9 +907,17 @@ export class @modelClassNameEditComponent implements OnInit {
     }
     let formValue = this.editForm.value;
     this.@modelName = { ...this.@modelName, ...formValue };
-    this.@modelNameSvc.set@modelClassName(this.@modelName).subscribe((res) => {
-      this.modal.close(true);
-    });
+    if (!this.@modelNameId) {
+      this.@modelNameSvc.add@modelClassName(this.@modelName).subscribe((@modelName: @modelClassName) => {
+        // this.@modelNameId = @modelName.id;
+        // this.@modelName.id = @modelName.id;
+        this.back();
+      });
+    } else {
+      this.@modelNameSvc.update@modelClassName(this.@modelName).subscribe(() => {
+        this.back();
+      });
+    }
   }
 
   /**
