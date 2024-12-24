@@ -11,7 +11,7 @@ https://github.com/279328316/JcApiHelper</Description>
 author:279328316@qq.com</PackageReleaseNotes>
     <Authors>Jc.Core</Authors>
     <Company>279328316@qq.com</Company>
-    <Version>1.0.33</Version>
+    <Version>1.0.34</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ApplicationIcon></ApplicationIcon>
   </PropertyGroup>
@@ -28,10 +28,5 @@ author:279328316@qq.com</PackageReleaseNotes>
   
   <ItemGroup>
     <EmbeddedResource Include="Html/**/*" Exclude="**/*/*.map;**/*/*.json;**/*/*.md" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Remove="Html\524.464c173e9fde5972025f.js" />
-    <None Remove="Html\runtime.85511c9788eb25e3ef10.js" />
   </ItemGroup>
 </Project>
